@@ -19,11 +19,12 @@ const NftSection = () => {
                   nftSrc={item.nftImgUrl}
                   campaignId={item.campaignId}
                   creator={item.creator}
-                  timeLeft={"20:34:38"}
+                  loopTimeSeconds={item.loopTimeSeconds}
                   totalEntriesStart={item.totalEntriesStart}
                   totalEntriesEnd={"3"}
                   entryCost={item.entryCost}
                   contractAccount={item.contractAccount}
+                  lastRoll={item.lastRoll}
                 />
               </div>
             );

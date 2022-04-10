@@ -56,7 +56,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
                 onClick={() => {
                   setShowAlert(false);
                 }}
-                style={{ backgroundColor: "#5f5dbb" }}
+                style={{ backgroundColor: "#5f5dbb !important" }}
                 className=" px-6 py-3"
               >
                 OK

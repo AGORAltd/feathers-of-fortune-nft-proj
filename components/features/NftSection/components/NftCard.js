@@ -4,22 +4,60 @@ import { useContext } from "react";
 import { NftContext } from "../../../../context/NftContext";
 import { useState } from "react";
 import SweetAlert from "react-bootstrap-sweetalert";
+import { useEffect } from "react";
 
 const NftCard = ({
   nftSrc,
   campaignId,
   creator,
-  timeLeft,
+  loopTimeSeconds,
   totalEntriesStart,
   totalEntriesEnd,
   entryCost,
   contractAccount,
+  lastRoll,
 }) => {
   const { joinCampaign, isTransactionSussessful, erroMsg, transactionId } =
     useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
-  const [showTransactionMessage, setShowTransactionMessage] = useState(false);
+  const [showTransactionMessage, setShowTransactionMessage] = useState();
+
+  const [showErrorMessage, setShowErrorMessage] = useState();
+
+  const [timeToShow, setTimeToShow] = useState("");
+
+  useEffect(() => {
+    if (erroMsg !== "") {
+      setShowErrorMessage(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateTimeToShow(finalUTCEpochTimeInMilliSec);
+  }, []);
+
+  const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
+    let interval = setInterval(() => {
+      const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
+      let distance = finalUTCEpochTimeInMilliSec - nowUTCEpochTimeInMilliSec;
+
+      if (distance < 0) distance = 0;
+      let hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      setTimeToShow(`${hours}:${minutes}:${seconds}`);
+
+      if (distance <= 0) {
+        clearInterval(interval);
+        setTimeToShow("EXPIRED");
+      }
+    }, 1000);
+  };
+  const finalUTCEpochTimeInMilliSec =
+    Date.parse(`${lastRoll}Z`) + loopTimeSeconds * 1000;
 
   return (
     <>
@@ -90,17 +128,17 @@ const NftCard = ({
         </SweetAlert>
       )}
 
-      {!isTransactionSussessful && (
+      {erroMsg && (
         <SweetAlert
           danger
-          show={showTransactionMessage}
-          style={{ backgroundColor: "#1d2228" }}
+          show={showErrorMessage}
+          style={{ backgroundColor: "#1d2228", color: "white" }}
           title=""
           customButtons={
             <>
               <button
                 onClick={() => {
-                  setShowTransactionMessage(false);
+                  setShowErrorMessage(false);
                 }}
                 style={{ backgroundColor: "#5f5dbb" }}
                 className=" px-6 py-3"
@@ -113,7 +151,6 @@ const NftCard = ({
           <p>{erroMsg}</p>
         </SweetAlert>
       )}
-
       <div className="rounded nft_card_container">
         <Image
           height={110}
@@ -129,7 +166,7 @@ const NftCard = ({
 
           <div className="nft_card_content_time_container text-white mx-1">
             <p className="time_to_role_text">Time to Roll</p>
-            <h1 className="nft_card_content_time">{timeLeft}</h1>
+            <h1 className="nft_card_content_time">{timeToShow}</h1>
           </div>
 
           <p className="total_entries_container text-white font-normal">

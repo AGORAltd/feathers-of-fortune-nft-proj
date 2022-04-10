@@ -1,10 +1,15 @@
 import { CreateCampaignBtn } from "../CreateCampaignsForm/CreateCampaignBtn";
+import { useRouter } from "next/router";
+import { useContext } from "react";
+import { NftContext } from "../../../context/NftContext";
 
 const NftFilter = () => {
+  const router = useRouter();
+  const { setStartIndex } = useContext(NftContext);
+
   const sendToRouteOnClick = (routeName) => {
-    if (typeof window != "undefined") {
-      window.location.pathname = routeName;
-    }
+    setStartIndex(0);
+    router.push(routeName);
   };
 
   return (
@@ -22,7 +27,7 @@ const NftFilter = () => {
 
           <button
             onClick={() => {
-              sendToRouteOnClick("/new");
+              sendToRouteOnClick("new");
             }}
             className="filter_button py-2 px-6 mx-2 rounded"
           >
@@ -31,7 +36,7 @@ const NftFilter = () => {
 
           <button
             onClick={() => {
-              sendToRouteOnClick("/ending-soon");
+              sendToRouteOnClick("ending-soon");
             }}
             className="filter_button py-2 px-6 mx-2 rounded"
           >
@@ -39,7 +44,7 @@ const NftFilter = () => {
           </button>
           <button
             onClick={() => {
-              sendToRouteOnClick("/ended");
+              sendToRouteOnClick("ended");
             }}
             className="filter_button py-2 px-6 mx-2 rounded"
           >

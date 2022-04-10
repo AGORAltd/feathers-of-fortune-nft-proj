@@ -143,6 +143,8 @@ export const NftContextProvider = ({ children }) => {
                 entryCost: campaignData[i]?.entrycost,
                 totalEntriesStart: campaignData[i]?.accounts.length,
                 totalEntriesEnd: campaignData[i]?.max_users,
+                loopTimeSeconds: campaignData[i]?.loop_time_seconds,
+                lastRoll: campaignData[i]?.last_roll,
               });
             })
             .catch((error) => {
@@ -223,7 +225,8 @@ export const NftContextProvider = ({ children }) => {
       setTransactionId(result.transaction_id);
       setIsTransactionSussessful(true);
     } catch (e) {
-      setErroMsg(e?.details?.message);
+      const errorMessageFromCatch = await e.message;
+      setErroMsg(errorMessageFromCatch);
       setIsTransactionSussessful(false);
     }
   };
@@ -251,7 +254,8 @@ export const NftContextProvider = ({ children }) => {
       setIsTransactionSussessful(true);
       setTransactionId(result.transaction_id);
     } catch (error) {
-      setErroMsg(error?.message);
+      const erroMsgFromCatch = await error?.message;
+      setErroMsg(erroMsgFromCatch);
       setIsTransactionSussessful(false);
     }
   };
