@@ -61,8 +61,8 @@ const NftCard = ({
           layout={"responsive"}
         />
         <p className="pt-5">
-          To participate in this Campaign ID : {campaignId} you're about to send{" "}
-          {entryCost}
+          To participate in this Campaign ID : {campaignId} you&apos;re about to
+          send {entryCost}
         </p>
       </SweetAlert>
 
