@@ -63,3 +63,7 @@
 .ended_overly {
   filter: grayscale(90%);
 }
+
+.video_nft {
+  min-height: 326px;
+}

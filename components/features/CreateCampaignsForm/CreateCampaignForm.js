@@ -15,17 +15,6 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
     useContext(NftContext);
   const [showAlert, setShowAlert] = useState(false);
 
-  const customStyles = {
-    content: {
-      display: "flex",
-      marginRight: "auto",
-      marginLeft: "auto",
-      maxWidth: "608px",
-      backgroundColor: "#1d2228",
-      zIndex: "10",
-    },
-  };
-
   const {
     register,
     handleSubmit,
@@ -90,10 +79,14 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
         </SweetAlert>
       )}
 
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={customStyles}
+      <SweetAlert
+        style={{ width: "640px", backgroundColor: "#1d2228" }}
+        className={"flex mx-auto"}
+        custom
+        show={modalIsOpen}
+        showConfirm={false}
+        showCancel={false}
+        showCloseButton={false}
       >
         <div className="w-full h-full campaign_creation_form">
           <h2 className="text-3xl font-bold text-center text-white">
@@ -212,7 +205,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
             </div>
           </form>
         </div>
-      </Modal>
+      </SweetAlert>
     </>
   );
 };

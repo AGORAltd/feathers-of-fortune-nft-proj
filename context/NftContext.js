@@ -74,50 +74,45 @@ export const NftContextProvider = ({ children }) => {
     setIsLoadingData(true);
     const runningCampaignsData = [];
 
-    switch (pathname) {
-      case "/":
-        await axios
-          .post(`${WAX_PINK_END_POINT}/v1/chain/get_table_rows`, {
-            json: true,
-            code: "fortunebirds",
-            scope: "fortunebirds",
-            table: "campaigns",
-            limit: 150,
-          })
-          .then((response) => {
-            for (let i = 0; i < response.data.rows?.length; i++) {
-              const runningCampaigns = response.data?.rows[i];
+    if (pathname == "/" || pathname == "/new" || pathname == "/ending-soon") {
+      await axios
+        .post(`${WAX_PINK_END_POINT}/v1/chain/get_table_rows`, {
+          json: true,
+          code: "fortunebirds",
+          scope: "fortunebirds",
+          table: "campaigns",
+          limit: 150,
+        })
+        .then((response) => {
+          for (let i = 0; i < response.data.rows?.length; i++) {
+            const runningCampaigns = response.data?.rows[i];
 
-              if (runningCampaigns?.asset_ids?.length > 0) {
-                runningCampaignsData.push(runningCampaigns);
-                setCampaignData(runningCampaignsData);
-              }
+            if (runningCampaigns?.asset_ids?.length > 0) {
+              runningCampaignsData.push(runningCampaigns);
+              setCampaignData(runningCampaignsData);
             }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        setIsLoadingData(false);
-        break;
-
-      case "/ended":
-        await axios
-          .post(`${WAX_PINK_END_POINT}/v1/chain/get_table_rows`, {
-            json: true,
-            code: "fortunebirds",
-            scope: "fortunebirds",
-            table: "results",
-            limit: 1000,
-          })
-          .then((response) => {
-            setCampaignData(response.data.rows);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        setIsLoadingData(false);
-      default:
-        break;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      setIsLoadingData(false);
+    } else {
+      await axios
+        .post(`${WAX_PINK_END_POINT}/v1/chain/get_table_rows`, {
+          json: true,
+          code: "fortunebirds",
+          scope: "fortunebirds",
+          table: "results",
+          limit: 1000,
+        })
+        .then((response) => {
+          setCampaignData(response.data.rows);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      setIsLoadingData(false);
     }
   };
 
@@ -128,7 +123,7 @@ export const NftContextProvider = ({ children }) => {
     const nftCardDataFromApi = [];
     setIsLoadingData(true);
     if (campaignData) {
-      if (pathname == "/") {
+      if (pathname == "/" || pathname == "/new" || pathname == "/ending-soon") {
         for (let i = startIndex; i < endIndex; i++) {
           await axios
             .get(
@@ -138,6 +133,12 @@ export const NftContextProvider = ({ children }) => {
               nftCardDataFromApi.push({
                 contractAccount: campaignData[i]?.contract_account,
                 nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
+                videoNftUrl: `${IPFS_URL}/${response?.data?.data?.data?.video}`,
+                isVideo:
+                  `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
+                  `${IPFS_URL}/undefined`
+                    ? true
+                    : false,
                 campaignId: campaignData[i]?.id,
                 creator: campaignData[i]?.authorized_account,
                 entryCost: campaignData[i]?.entrycost,
@@ -145,13 +146,13 @@ export const NftContextProvider = ({ children }) => {
                 totalEntriesEnd: campaignData[i]?.max_users,
                 loopTimeSeconds: campaignData[i]?.loop_time_seconds,
                 lastRoll: campaignData[i]?.last_roll,
+                totalEntriesEnd: campaignData[i]?.max_users,
               });
             })
             .catch((error) => {
               console.error(error);
             });
         }
-        setIsLoadingData(false);
         setNftCardData(nftCardDataFromApi);
       } else if (pathname == "/ended") {
         for (let i = startIndex; i < endIndex; i++) {
@@ -171,9 +172,9 @@ export const NftContextProvider = ({ children }) => {
             });
         }
         setNftCardData(nftCardDataFromApi);
-        setIsLoadingData(false);
       }
     }
+    setIsLoadingData(false);
   };
 
   const getAuthUsers = async () => {

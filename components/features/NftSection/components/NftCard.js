@@ -16,6 +16,8 @@ const NftCard = ({
   entryCost,
   contractAccount,
   lastRoll,
+  isVideo,
+  videoNftUrl,
 }) => {
   const { joinCampaign, isTransactionSussessful, erroMsg, transactionId } =
     useContext(NftContext);
@@ -90,14 +92,28 @@ const NftCard = ({
           </>
         }
       >
-        <Image
-          height={100}
-          width={"100%"}
-          loading="lazy"
-          src={nftSrc}
-          objectFit={"contain"}
-          layout={"responsive"}
-        />
+        {!isVideo ? (
+          <Image
+            height={110}
+            width={"100%"}
+            loading="lazy"
+            src={nftSrc}
+            objectFit={"fill"}
+            layout={"responsive"}
+          />
+        ) : (
+          <video
+            className="video_nft object-cover"
+            loop
+            muted
+            autoPlay
+            controls=""
+          >
+            <source src={videoNftUrl} type="video/mp4" />
+            <source src={videoNftUrl} type="video/ogg" />
+          </video>
+        )}
+
         <p className="pt-5">
           To participate in this Campaign ID : {campaignId} you&apos;re about to
           send {entryCost}
@@ -152,14 +168,28 @@ const NftCard = ({
         </SweetAlert>
       )}
       <div className="rounded nft_card_container">
-        <Image
-          height={110}
-          width={"100%"}
-          loading="lazy"
-          src={nftSrc}
-          objectFit={"fill"}
-          layout={"responsive"}
-        />
+        {!isVideo ? (
+          <Image
+            height={110}
+            width={"100%"}
+            loading="lazy"
+            src={nftSrc}
+            objectFit={"fill"}
+            layout={"responsive"}
+          />
+        ) : (
+          <video
+            className="video_nft object-cover"
+            loop
+            muted
+            autoPlay
+            controls=""
+          >
+            <source src={videoNftUrl} type="video/mp4" />
+            <source src={videoNftUrl} type="video/ogg" />
+          </video>
+        )}
+
         <div className="nft_card_content_container text-center">
           <h2 className="nft_card_campaign_id">Campaign Id: {campaignId}</h2>
           <p className="text-white nft_card_autho_name">by {creator}</p>

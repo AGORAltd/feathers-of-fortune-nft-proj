@@ -5,6 +5,7 @@ import { NftContext } from "../../../context/NftContext";
 
 const NftFilter = () => {
   const router = useRouter();
+  const { pathname } = router;
   const { setStartIndex } = useContext(NftContext);
 
   const sendToRouteOnClick = (routeName) => {
@@ -55,11 +56,13 @@ const NftFilter = () => {
         </div>
 
         <div>
-          <select className="filter_button py-2 px-6 rounded mx-2">
-            <option>Price</option>
-            <option value="Lowest">Lowest</option>
-            <option value="Highest">Highest</option>
-          </select>
+          {pathname != "/ended" && (
+            <select className="filter_button py-2 px-6 rounded mx-2">
+              <option>Price</option>
+              <option value="Lowest">Lowest</option>
+              <option value="Highest">Highest</option>
+            </select>
+          )}
 
           <select className="filter_button py-2 px-6 rounded mx-2">
             <option>Token</option>

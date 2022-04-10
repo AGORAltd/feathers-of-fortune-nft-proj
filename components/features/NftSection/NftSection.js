@@ -21,10 +21,12 @@ const NftSection = () => {
                   creator={item.creator}
                   loopTimeSeconds={item.loopTimeSeconds}
                   totalEntriesStart={item.totalEntriesStart}
-                  totalEntriesEnd={"3"}
+                  totalEntriesEnd={item.totalEntriesEnd}
                   entryCost={item.entryCost}
                   contractAccount={item.contractAccount}
                   lastRoll={item.lastRoll}
+                  isVideo={item.isVideo}
+                  videoNftUrl={item.videoNftUrl}
                 />
               </div>
             );
