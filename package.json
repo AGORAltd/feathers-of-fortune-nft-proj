@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@waxio/waxjs": "^1.0.4",
+    "anchor-link": "^3.4.0",
+    "anchor-link-browser-transport": "^3.3.0",
     "axios": "^0.26.1",
     "firebase": "^9.6.10",
     "next": "12.1.4",

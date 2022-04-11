@@ -19,11 +19,18 @@ const NftCard = ({
   isVideo,
   videoNftUrl,
 }) => {
-  const { joinCampaign, isTransactionSussessful, erroMsg, transactionId } =
-    useContext(NftContext);
+  const {
+    joinCampaign,
+    isTransactionSussessful,
+    erroMsg,
+    transactionId,
+    setIsTransactionSussessful,
+    userAccount,
+  } = useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
   const [showTransactionMessage, setShowTransactionMessage] = useState();
+  const [showNotLoggedInMsg, setShowNotLoggedInMsg] = useState(false);
 
   const [showErrorMessage, setShowErrorMessage] = useState();
 
@@ -32,12 +39,16 @@ const NftCard = ({
   useEffect(() => {
     if (erroMsg !== "") {
       setShowErrorMessage(true);
+      setShowTransactionMessage(false);
+    } else {
+      setShowErrorMessage(false);
+      setShowTransactionMessage(true);
     }
   }, []);
 
   useEffect(() => {
     updateTimeToShow(finalUTCEpochTimeInMilliSec);
-  }, []);
+  }, [timeToShow]);
 
   const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
     let interval = setInterval(() => {
@@ -66,14 +77,29 @@ const NftCard = ({
   return (
     <>
       <SweetAlert
+        style={{ background: "#14181d", color: "white" }}
+        title="Please Login to join the campaign"
+        show={showNotLoggedInMsg}
+        showConfirm={false}
+      >
+        <button
+          className="py-3"
+          onClick={() => {
+            setShowNotLoggedInMsg(false);
+          }}
+        >
+          OK
+        </button>
+      </SweetAlert>
+      <SweetAlert
         custom
         show={showAlert}
         style={{ backgroundColor: "#1d2228", color: "white" }}
         customButtons={
           <>
             <button
-              onClick={() => {
-                joinCampaign(contractAccount, campaignId, entryCost);
+              onClick={async () => {
+                await joinCampaign(contractAccount, campaignId, entryCost);
                 setShowAlert(false);
               }}
               style={{ backgroundColor: "#5f5dbb" }}
@@ -122,29 +148,29 @@ const NftCard = ({
         </p>
       </SweetAlert>
 
-      {isTransactionSussessful && (
-        <SweetAlert
-          success
-          show={showTransactionMessage}
-          style={{ color: "white", backgroundColor: "#1d2228" }}
-          title="Campaign Created!"
-          customButtons={
-            <>
-              <button
-                onClick={() => {
-                  setShowTransactionMessage(false);
-                }}
-                style={{ backgroundColor: "#5f5dbb" }}
-                className=" px-6 py-3"
-              >
-                OK
-              </button>
-            </>
-          }
-        >
-          <p>Transaction Id : {transactionId} </p>
-        </SweetAlert>
-      )}
+      {/* {isTransactionSussessful && ( */}
+      <SweetAlert
+        success
+        show={isTransactionSussessful}
+        style={{ color: "white", backgroundColor: "#1d2228" }}
+        title="Campaign Created!"
+        customButtons={
+          <>
+            <button
+              onClick={() => {
+                setIsTransactionSussessful(false);
+              }}
+              style={{ backgroundColor: "#5f5dbb" }}
+              className=" px-6 py-3"
+            >
+              OK
+            </button>
+          </>
+        }
+      >
+        <p>Transaction Id : {transactionId} </p>
+      </SweetAlert>
+      {/* )} */}
 
       {erroMsg && (
         <SweetAlert
@@ -211,7 +237,7 @@ const NftCard = ({
 
           <button
             onClick={() => {
-              setShowAlert(true);
+              userAccount ? setShowAlert(true) : setShowNotLoggedInMsg(true);
             }}
             className="join_campaign_now_btn my-2.5"
           >

@@ -9,6 +9,9 @@ import {
 import { useRouter } from "next/router";
 import * as waxjs from "@waxio/waxjs/dist";
 
+import AnchorLink from "anchor-link";
+import AnchorLinkBrowserTransport from "anchor-link-browser-transport";
+
 export const NftContext = createContext();
 
 export const NftContextProvider = ({ children }) => {
@@ -22,16 +25,35 @@ export const NftContextProvider = ({ children }) => {
   const [endIndex, setEndIndex] = useState(8);
   const [authUserData, setAuthUserData] = useState();
   const [isAuthorizedUser, setIsAuthorizedUser] = useState(false);
-  const [isTransactionSussessful, setIsTransactionSussessful] = useState();
+  const [isTransactionSussessful, setIsTransactionSussessful] = useState(false);
   const [transactionId, setTransactionId] = useState("");
   const [erroMsg, setErroMsg] = useState("");
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [userLoginProvider, setUserLoginProvider] = useState("");
 
   let pageSize = 8;
 
-  useEffect(() => {
-    waxUserLogIn();
-  }, []);
+  let chainId =
+    "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4";
+
+  let nodeUrl = "wax.pink.gg";
+  const dapp = "PIXELCAMPAIGN";
+
+  const wax = new waxjs.WaxJS({
+    rpcEndpoint: RPC_ENDPOINT,
+    tryAutoLogin: false,
+  });
+
+  const anchorTransport = new AnchorLinkBrowserTransport();
+  const anchorLink = new AnchorLink({
+    transport: anchorTransport,
+    verifyProofs: true,
+    chains: [{ chainId: chainId, nodeUrl: `https://${nodeUrl}` }],
+  });
+
+  // useEffect(() => {
+  //   waxUserLogIn();
+  // }, []);
 
   useEffect(() => {
     checkIfAuthorizeduser();
@@ -48,23 +70,53 @@ export const NftContextProvider = ({ children }) => {
       : setShowPagination(true);
   }, [campaignData, startIndex, endIndex]);
 
-  const wax = new waxjs.WaxJS({
-    rpcEndpoint: RPC_ENDPOINT,
-    tryAutoLogin: true,
-  });
+  useEffect(() => {
+    async () => {
+      try {
+        let sessionList = await anchorLink.listSessions(dapp);
+        if (sessionList && sessionList.length > 0) {
+          wallet_session = await anchorLink.restoreSession(dapp);
+        } else {
+          wallet_session = (await anchorLink.login(dapp)).session;
+        }
+      } catch (e) {
+        console.log(e.message);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    userAccountLogin();
+  }, [userLoginProvider]);
+
+  const userAccountLogin = () => {
+    if (userLoginProvider == "anchor") {
+      anchorUserLogin();
+    } else {
+      waxUserLogIn();
+    }
+  };
+
+  const anchorUserLogin = async () => {
+    let sessionList = await anchorLink.listSessions(dapp);
+
+    try {
+      if (sessionList && sessionList.length > 0) {
+        wallet_session = await anchorLink.restoreSession(dapp);
+      } else {
+        wallet_session = (await anchorLink.login(dapp)).session;
+      }
+      setUserAccount(String(wallet_session.auth).split("@")[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const waxUserLogIn = async () => {
     try {
-      let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
-      if (isAutoLoginAvailable == true) {
-        let userAccountIfAlreadyLoggedIn = wax.userAccount;
-        setUserAccount(userAccountIfAlreadyLoggedIn);
-        getAuthUsers();
-      } else {
-        const userAccountFromLogin = await wax.login();
-        setUserAccount(userAccountFromLogin);
-        getAuthUsers();
-      }
+      const userAccountFromLogin = await wax.login();
+      setUserAccount(userAccountFromLogin);
+      getAuthUsers();
     } catch (err) {
       console.log(err);
     }
@@ -285,6 +337,7 @@ export const NftContextProvider = ({ children }) => {
         setNftCardData,
         currentPageIndex,
         setCurrentPageIndex,
+        setUserLoginProvider,
       }}
     >
       {children}
