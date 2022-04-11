@@ -253,7 +253,7 @@ export const NftContextProvider = ({ children }) => {
         { blocksBehind: 4, expireSeconds: 120 }
       );
       setIsTransactionSussessful(true);
-      setTransactionId(result.transaction_id);
+      setTransactionId(result?.transaction_id);
     } catch (error) {
       const erroMsgFromCatch = await error?.message;
       setErroMsg(erroMsgFromCatch);

@@ -1,5 +1,4 @@
 import React from "react";
-import Modal from "react-modal";
 import { useForm } from "react-hook-form";
 import { useContext } from "react";
 import { NftContext } from "../../../context/NftContext";

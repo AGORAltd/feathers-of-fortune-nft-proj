@@ -50,7 +50,9 @@ const NftCard = ({
       );
       let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      setTimeToShow(`${hours}:${minutes}:${seconds}`);
+      setTimeToShow(
+        `${hours}:${minutes < 10 ? "0" + minutes : minutes}:${seconds}`
+      );
 
       if (distance <= 0) {
         clearInterval(interval);

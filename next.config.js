@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: { domains: ["images.pexels.com", "ipfs.atomichub.io"] },
+  images: { domains: ["ipfs.atomichub.io"] },
 };
 
 module.exports = nextConfig;
