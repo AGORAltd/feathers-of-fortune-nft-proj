@@ -204,7 +204,7 @@ export const NftContextProvider = ({ children }) => {
 
   const createCampaign = async (dataToSend) => {
     try {
-      const result = await wax.api.transact(
+      const result = await wax?.api?.transact(
         {
           actions: [
             {
