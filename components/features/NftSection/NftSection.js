@@ -27,6 +27,8 @@ const NftSection = () => {
                   lastRoll={item.lastRoll}
                   isVideo={item.isVideo}
                   videoNftUrl={item.videoNftUrl}
+                  assetId={item.assetId}
+                  joinedAccounts={item.joinedAccounts}
                 />
               </div>
             );

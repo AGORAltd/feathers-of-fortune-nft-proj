@@ -14,6 +14,11 @@ import AnchorLinkBrowserTransport from "anchor-link-browser-transport";
 
 export const NftContext = createContext();
 
+const wax = new waxjs.WaxJS({
+  rpcEndpoint: RPC_ENDPOINT,
+  tryAutoLogin: false,
+});
+
 export const NftContextProvider = ({ children }) => {
   const { pathname } = useRouter();
   const [userAccount, setUserAccount] = useState();
@@ -25,8 +30,8 @@ export const NftContextProvider = ({ children }) => {
   const [endIndex, setEndIndex] = useState(8);
   const [authUserData, setAuthUserData] = useState();
   const [isAuthorizedUser, setIsAuthorizedUser] = useState(false);
-  const [isTransactionSussessful, setIsTransactionSussessful] = useState(false);
-  const [transactionId, setTransactionId] = useState("");
+  const [isTransactionSussessful, setIsTransactionSussessful] = useState();
+  const [transactionId, setTransactionId] = useState(null);
   const [erroMsg, setErroMsg] = useState("");
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [userLoginProvider, setUserLoginProvider] = useState("");
@@ -38,11 +43,6 @@ export const NftContextProvider = ({ children }) => {
 
   let nodeUrl = "wax.pink.gg";
   const dapp = "PIXELCAMPAIGN";
-
-  const wax = new waxjs.WaxJS({
-    rpcEndpoint: RPC_ENDPOINT,
-    tryAutoLogin: false,
-  });
 
   const anchorTransport = new AnchorLinkBrowserTransport();
   const anchorLink = new AnchorLink({
@@ -183,12 +183,16 @@ export const NftContextProvider = ({ children }) => {
             )
             .then((response) => {
               nftCardDataFromApi.push({
+                joinedAccounts: campaignData[i]?.accounts,
+                assetId: response.data?.data?.asset_id,
                 contractAccount: campaignData[i]?.contract_account,
                 nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
                 videoNftUrl: `${IPFS_URL}/${response?.data?.data?.data?.video}`,
                 isVideo:
-                  `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
-                  `${IPFS_URL}/undefined`
+                  `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
+                    ? false
+                    : `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
+                      `${IPFS_URL}/undefined`
                     ? true
                     : false,
                 campaignId: campaignData[i]?.id,
@@ -200,6 +204,7 @@ export const NftContextProvider = ({ children }) => {
                 lastRoll: campaignData[i]?.last_roll,
                 totalEntriesEnd: campaignData[i]?.max_users,
               });
+              console.log(nftCardDataFromApi);
             })
             .catch((error) => {
               console.error(error);
@@ -214,6 +219,7 @@ export const NftContextProvider = ({ children }) => {
             )
             .then((response) => {
               nftCardDataFromApi.push({
+                assetId: response.data?.data?.asset_id,
                 nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
                 campaignId: campaignData[i]?.campaign_id,
                 winner: campaignData[i]?.winner,
@@ -256,7 +262,7 @@ export const NftContextProvider = ({ children }) => {
 
   const createCampaign = async (dataToSend) => {
     try {
-      const result = await wax?.api?.transact(
+      const results = await wax.api?.transact(
         {
           actions: [
             {
@@ -264,7 +270,7 @@ export const NftContextProvider = ({ children }) => {
               name: "create",
               authorization: [
                 {
-                  actor: wax.userAccount,
+                  actor: userAccount,
                   permission: "active",
                 },
               ],
@@ -275,12 +281,13 @@ export const NftContextProvider = ({ children }) => {
         },
         { blocksBehind: 3, expireSeconds: 30 }
       );
-      setTransactionId(result.transaction_id);
+      setTransactionId(results?.transaction_id);
       setIsTransactionSussessful(true);
-    } catch (e) {
-      const errorMessageFromCatch = await e.message;
+    } catch (error) {
+      const errorMessageFromCatch = await error.message;
       setErroMsg(errorMessageFromCatch);
       setIsTransactionSussessful(false);
+      console.log(error?.message);
     }
   };
 
@@ -306,8 +313,12 @@ export const NftContextProvider = ({ children }) => {
       );
       setIsTransactionSussessful(true);
       setTransactionId(result?.transaction_id);
+      if (window != "undefined") {
+        window.location.reload();
+      }
     } catch (error) {
-      const erroMsgFromCatch = await error?.message;
+      const erroMsgFromCatch = await error.details[0]?.message;
+      console.log(erroMsgFromCatch);
       setErroMsg(erroMsgFromCatch);
       setIsTransactionSussessful(false);
     }
@@ -338,6 +349,8 @@ export const NftContextProvider = ({ children }) => {
         currentPageIndex,
         setCurrentPageIndex,
         setUserLoginProvider,
+        setIsTransactionSussessful,
+        setErroMsg,
       }}
     >
       {children}

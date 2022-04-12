@@ -32,7 +32,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
 
   return (
     <>
-      {isTransactionSussessful ? (
+      {isTransactionSussessful && (
         <SweetAlert
           success
           show={showAlert}
@@ -42,7 +42,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
             <>
               <button
                 onClick={() => {
-                  setShowAlert(false);
+                  window.location.reload();
                 }}
                 style={{ backgroundColor: "#5f5dbb !important" }}
                 className=" px-6 py-3"
@@ -54,7 +54,9 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
         >
           <p>Transaction Id : {transactionId} </p>
         </SweetAlert>
-      ) : (
+      )}
+
+      {erroMsg && (
         <SweetAlert
           danger
           show={showAlert}

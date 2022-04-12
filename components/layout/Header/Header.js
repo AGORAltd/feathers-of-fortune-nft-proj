@@ -24,14 +24,20 @@ const Header = () => {
           <button
             style={{ background: "#14181d" }}
             className="flex items-center justify-between px-3 py-1 my-4"
-            onClick={() => setUserLoginProvider("wax")}
+            onClick={() => {
+              setUserLoginPopup(false);
+              setUserLoginProvider("wax");
+            }}
           >
             <p>Wax Cloud Wallet </p>
             <img width={70} src="/media/waxLogoPng.png" />
           </button>
           <button
             style={{ background: "#14181d" }}
-            onClick={() => setUserLoginProvider("anchor")}
+            onClick={() => {
+              setUserLoginPopup(false);
+              setUserLoginProvider("anchor");
+            }}
             className="flex items-center justify-between px-3 py-1"
           >
             <p>Anchor </p> <img width={40} src="/media/anchor_logo.svg" />

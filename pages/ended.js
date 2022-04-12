@@ -27,6 +27,7 @@ const Ended = () => {
                       nftSrc={item.nftImgUrl}
                       winner={item.winner}
                       campaignId={item.campaignId}
+                      assetId={item.assetId}
                     />
                   );
                 })}

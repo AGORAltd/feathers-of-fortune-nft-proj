@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
 
-const NftCardEnded = ({ nftSrc, campaignId, winner }) => {
+const NftCardEnded = ({ nftSrc, campaignId, winner, assetId }) => {
   return (
     <div className="rounded nft_card_container">
       <div className="w-full  relative z-10">
@@ -10,15 +10,20 @@ const NftCardEnded = ({ nftSrc, campaignId, winner }) => {
           <p className="text-white font-bold">Ended</p>
         </div>
       </div>
-      <Image
-        className="ended_overly"
-        height={100}
-        width={"100%"}
-        loading="lazy"
-        src={nftSrc}
-        objectFit={"fill"}
-        layout={"responsive"}
-      />
+      <a
+        href={`https://wax.atomichub.io/explorer/asset/${assetId}`}
+        target="_blank"
+      >
+        <Image
+          className="ended_overly"
+          height={100}
+          width={"100%"}
+          loading="lazy"
+          src={nftSrc}
+          objectFit={"fill"}
+          layout={"responsive"}
+        />
+      </a>
       <div className="nft_card_content_container text-center">
         <h2 className="nft_card_campaign_id">Campaign Id: {campaignId}</h2>
 

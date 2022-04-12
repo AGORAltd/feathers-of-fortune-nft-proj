@@ -18,6 +18,8 @@ const NftCard = ({
   lastRoll,
   isVideo,
   videoNftUrl,
+  assetId,
+  joinedAccounts,
 }) => {
   const {
     joinCampaign,
@@ -26,6 +28,7 @@ const NftCard = ({
     transactionId,
     setIsTransactionSussessful,
     userAccount,
+    setErroMsg,
   } = useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
@@ -37,14 +40,14 @@ const NftCard = ({
   const [timeToShow, setTimeToShow] = useState("");
 
   useEffect(() => {
-    if (erroMsg !== "") {
+    if (erroMsg != "") {
       setShowErrorMessage(true);
       setShowTransactionMessage(false);
     } else {
       setShowErrorMessage(false);
       setShowTransactionMessage(true);
     }
-  }, []);
+  }, [showErrorMessage]);
 
   useEffect(() => {
     updateTimeToShow(finalUTCEpochTimeInMilliSec);
@@ -62,7 +65,9 @@ const NftCard = ({
       let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       let seconds = Math.floor((distance % (1000 * 60)) / 1000);
       setTimeToShow(
-        `${hours}:${minutes < 10 ? "0" + minutes : minutes}:${seconds}`
+        `${hours}:${minutes < 10 ? "0" + minutes : minutes}:${
+          seconds < 10 ? "0" + seconds : seconds
+        }`
       );
 
       if (distance <= 0) {
@@ -148,29 +153,29 @@ const NftCard = ({
         </p>
       </SweetAlert>
 
-      {/* {isTransactionSussessful && ( */}
-      <SweetAlert
-        success
-        show={isTransactionSussessful}
-        style={{ color: "white", backgroundColor: "#1d2228" }}
-        title="Campaign Created!"
-        customButtons={
-          <>
-            <button
-              onClick={() => {
-                setIsTransactionSussessful(false);
-              }}
-              style={{ backgroundColor: "#5f5dbb" }}
-              className=" px-6 py-3"
-            >
-              OK
-            </button>
-          </>
-        }
-      >
-        <p>Transaction Id : {transactionId} </p>
-      </SweetAlert>
-      {/* )} */}
+      {isTransactionSussessful && (
+        <SweetAlert
+          success
+          show={isTransactionSussessful}
+          style={{ color: "white", backgroundColor: "#1d2228" }}
+          title="Successfully Joined!"
+          customButtons={
+            <>
+              <button
+                onClick={() => {
+                  setIsTransactionSussessful(false);
+                }}
+                style={{ backgroundColor: "#5f5dbb" }}
+                className=" px-6 py-3"
+              >
+                OK
+              </button>
+            </>
+          }
+        >
+          <p>Transaction Id : {transactionId} </p>
+        </SweetAlert>
+      )}
 
       {erroMsg && (
         <SweetAlert
@@ -182,7 +187,7 @@ const NftCard = ({
             <>
               <button
                 onClick={() => {
-                  setShowErrorMessage(false);
+                  setErroMsg("");
                 }}
                 style={{ backgroundColor: "#5f5dbb" }}
                 className=" px-6 py-3"
@@ -196,27 +201,32 @@ const NftCard = ({
         </SweetAlert>
       )}
       <div className="rounded nft_card_container">
-        {!isVideo ? (
-          <Image
-            height={110}
-            width={"100%"}
-            loading="lazy"
-            src={nftSrc}
-            objectFit={"fill"}
-            layout={"responsive"}
-          />
-        ) : (
-          <video
-            className="video_nft object-cover"
-            loop
-            muted
-            autoPlay
-            controls=""
-          >
-            <source src={videoNftUrl} type="video/mp4" />
-            <source src={videoNftUrl} type="video/ogg" />
-          </video>
-        )}
+        <a
+          href={`https://wax.atomichub.io/explorer/asset/${assetId}`}
+          target="_blank"
+        >
+          {!isVideo ? (
+            <Image
+              height={110}
+              width={"100%"}
+              loading="lazy"
+              src={nftSrc}
+              objectFit={"fill"}
+              layout={"responsive"}
+            />
+          ) : (
+            <video
+              className="video_nft object-cover"
+              loop
+              muted
+              autoPlay
+              controls=""
+            >
+              <source src={videoNftUrl} type="video/mp4" />
+              <source src={videoNftUrl} type="video/ogg" />
+            </video>
+          )}
+        </a>
 
         <div className="nft_card_content_container text-center">
           <h2 className="nft_card_campaign_id">Campaign Id: {campaignId}</h2>
@@ -245,9 +255,20 @@ const NftCard = ({
           </button>
           <div className="entrants_container cursor-pointer">
             <p className="entrants_counter font-semibold py-2.5">Entrants</p>
-            <p className="py-2 hidden entrants_indicator rounded text-white">
-              No Entrants So Far
-            </p>
+
+            {joinedAccounts.length > 0 ? (
+              joinedAccounts.map((item) => {
+                return (
+                  <p className="py-2 my-2 hidden entrants_indicator rounded text-white">
+                    {item}
+                  </p>
+                );
+              })
+            ) : (
+              <p className="py-2 hidden entrants_indicator rounded text-white">
+                No Entrants So Far
+              </p>
+            )}
           </div>
         </div>
       </div>
