@@ -204,6 +204,7 @@ const NftCard = ({
         <a
           href={`https://wax.atomichub.io/explorer/asset/${assetId}`}
           target="_blank"
+          rel="noreferrer"
         >
           {!isVideo ? (
             <Image

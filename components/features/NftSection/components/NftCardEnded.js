@@ -13,6 +13,7 @@ const NftCardEnded = ({ nftSrc, campaignId, winner, assetId }) => {
       <a
         href={`https://wax.atomichub.io/explorer/asset/${assetId}`}
         target="_blank"
+        rel="noreferrer"
       >
         <Image
           className="ended_overly"

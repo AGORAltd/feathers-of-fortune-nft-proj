@@ -22,13 +22,15 @@ const Ended = () => {
               {nftCardData != undefined &&
                 nftCardData?.map((item, index) => {
                   return (
-                    <NftCardEnded
-                      key={index}
-                      nftSrc={item.nftImgUrl}
-                      winner={item.winner}
-                      campaignId={item.campaignId}
-                      assetId={item.assetId}
-                    />
+                    <>
+                      <NftCardEnded
+                        key={index}
+                        nftSrc={item.nftImgUrl}
+                        winner={item.winner}
+                        campaignId={item.campaignId}
+                        assetId={item.assetId}
+                      />
+                    </>
                   );
                 })}
             </div>
