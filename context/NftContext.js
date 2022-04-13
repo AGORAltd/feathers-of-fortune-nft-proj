@@ -99,6 +99,7 @@ export const NftContextProvider = ({ children }) => {
 
   const anchorUserLogin = async () => {
     let sessionList = await anchorLink.listSessions(dapp);
+    let wallet_session;
 
     try {
       if (sessionList && sessionList.length > 0) {
