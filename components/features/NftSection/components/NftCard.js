@@ -47,7 +47,7 @@ const NftCard = ({
       setShowErrorMessage(false);
       setShowTransactionMessage(true);
     }
-  }, [showErrorMessage]);
+  }, []);
 
   useEffect(() => {
     updateTimeToShow(finalUTCEpochTimeInMilliSec);
