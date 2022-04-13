@@ -318,7 +318,7 @@ export const NftContextProvider = ({ children }) => {
         window.location.reload();
       }
     } catch (error) {
-      const erroMsgFromCatch = await error.details[0]?.message;
+      const erroMsgFromCatch = await error.details?.message;
       console.log(erroMsgFromCatch);
       setErroMsg(erroMsgFromCatch);
       setIsTransactionSussessful(false);
