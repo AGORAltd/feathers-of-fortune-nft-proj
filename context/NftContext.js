@@ -16,7 +16,7 @@ export const NftContext = createContext();
 
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
-  tryAutoLogin: false,
+  tryAutoLogin: true,
 });
 
 export const NftContextProvider = ({ children }) => {
@@ -30,11 +30,15 @@ export const NftContextProvider = ({ children }) => {
   const [endIndex, setEndIndex] = useState(8);
   const [authUserData, setAuthUserData] = useState();
   const [isAuthorizedUser, setIsAuthorizedUser] = useState(false);
-  const [isTransactionSussessful, setIsTransactionSussessful] = useState();
+  const [isCampaignCreateationSussessful, setIsCampaignCreateationSussessful] =
+    useState();
   const [transactionId, setTransactionId] = useState(null);
   const [erroMsg, setErroMsg] = useState("");
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [userLoginProvider, setUserLoginProvider] = useState("");
+  const [campaignDataOnExpire, setCampaignDataOnExpire] = useState();
+  const [wonUserOnCampaignExpire, setWonUserOnCampaignExpire] = useState();
+  const [isTransactionSussessful, setIsTransactionSussessful] = useState();
 
   let pageSize = 8;
 
@@ -50,10 +54,6 @@ export const NftContextProvider = ({ children }) => {
     verifyProofs: true,
     chains: [{ chainId: chainId, nodeUrl: `https://${nodeUrl}` }],
   });
-
-  // useEffect(() => {
-  //   waxUserLogIn();
-  // }, []);
 
   useEffect(() => {
     checkIfAuthorizeduser();
@@ -282,11 +282,11 @@ export const NftContextProvider = ({ children }) => {
         { blocksBehind: 3, expireSeconds: 30 }
       );
       setTransactionId(results?.transaction_id);
-      setIsTransactionSussessful(true);
+      setIsCampaignCreateationSussessful(true);
     } catch (error) {
       const errorMessageFromCatch = await error.message;
       setErroMsg(errorMessageFromCatch);
-      setIsTransactionSussessful(false);
+      setIsCampaignCreateationSussessful(false);
       console.log(error?.message);
     }
   };
@@ -324,9 +324,36 @@ export const NftContextProvider = ({ children }) => {
     }
   };
 
+  const getWinnerWhenExpired = async (assetIdToFindWith) => {
+    await axios
+      .post(`${WAX_PINK_END_POINT}/v1/chain/get_table_rows`, {
+        json: true,
+        code: "fortunebirds",
+        scope: "fortunebirds",
+        table: "results",
+        limit: 1000,
+      })
+      .then((response) => {
+        setCampaignDataOnExpire(response.data?.rows);
+
+        const currentWinner = campaignDataOnExpire?.find((item) => {
+          return item.asset_id == assetIdToFindWith;
+        });
+        setWonUserOnCampaignExpire(currentWinner?.winner);
+        return wonUserOnCampaignExpire;
+      })
+      .catch((error) => {
+        return error;
+        console.log(error);
+      });
+  };
+
   return (
     <NftContext.Provider
       value={{
+        wonUserOnCampaignExpire,
+        campaignDataOnExpire,
+        getWinnerWhenExpired,
         nftCardData,
         isLoadingData,
         showPagination,
@@ -351,6 +378,7 @@ export const NftContextProvider = ({ children }) => {
         setUserLoginProvider,
         setIsTransactionSussessful,
         setErroMsg,
+        isCampaignCreateationSussessful,
       }}
     >
       {children}

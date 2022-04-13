@@ -29,6 +29,8 @@ const NftCard = ({
     setIsTransactionSussessful,
     userAccount,
     setErroMsg,
+    getWinnerWhenExpired,
+    wonUserOnCampaignExpire,
   } = useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
@@ -38,6 +40,11 @@ const NftCard = ({
   const [showErrorMessage, setShowErrorMessage] = useState();
 
   const [timeToShow, setTimeToShow] = useState("");
+
+  const [timeCountDown, setTimeCountDown] = useState(10);
+
+  const [showWonUserOnCampaignExpire, setShowWonUserOnCampaignExpire] =
+    useState(false);
 
   useEffect(() => {
     if (erroMsg != "") {
@@ -72,12 +79,14 @@ const NftCard = ({
 
       if (distance <= 0) {
         clearInterval(interval);
-        setTimeToShow("EXPIRED");
+        setTimeToShow("Reveal Winner");
       }
     }, 1000);
   };
   const finalUTCEpochTimeInMilliSec =
     Date.parse(`${lastRoll}Z`) + loopTimeSeconds * 1000;
+
+  () => {};
 
   return (
     <>
@@ -200,6 +209,56 @@ const NftCard = ({
           <p>{erroMsg}</p>
         </SweetAlert>
       )}
+
+      {/* SHOW WON USER MODAL STARTS HERE */}
+
+      <SweetAlert
+        custom
+        show={showWonUserOnCampaignExpire}
+        style={{ backgroundColor: "#1d2228", color: "white" }}
+        customButtons={
+          <>
+            <button
+              onClick={() => {
+                setShowWonUserOnCampaignExpire(false);
+              }}
+              style={{ backgroundColor: "#5f5dbb" }}
+              className=" px-6 py-3 mx-2 rounded-lg"
+            >
+              OK
+            </button>
+          </>
+        }
+      >
+        {!isVideo ? (
+          <Image
+            height={110}
+            width={"100%"}
+            loading="lazy"
+            src={nftSrc}
+            objectFit={"fill"}
+            layout={"responsive"}
+          />
+        ) : (
+          <video
+            className="video_nft object-cover"
+            loop
+            muted
+            autoPlay
+            controls=""
+          >
+            <source src={videoNftUrl} type="video/mp4" />
+            <source src={videoNftUrl} type="video/ogg" />
+          </video>
+        )}
+
+        <p className="pt-5">
+          {timeCountDown <= 0
+            ? `Winner of the contest is ${wonUserOnCampaignExpire}`
+            : ` Revealing the winner in ${timeCountDown}`}
+        </p>
+      </SweetAlert>
+
       <div className="rounded nft_card_container">
         <a
           href={`https://wax.atomichub.io/explorer/asset/${assetId}`}
@@ -235,7 +294,34 @@ const NftCard = ({
 
           <div className="nft_card_content_time_container text-white mx-1">
             <p className="time_to_role_text">Time to Roll</p>
-            <h1 className="nft_card_content_time">{timeToShow}</h1>
+
+            <button
+              className={`${
+                timeToShow == "Reveal Winner"
+                  ? "pointer-events-auto"
+                  : "pointer-events-none"
+              }`}
+              onClick={async () => {
+                await getWinnerWhenExpired(assetId)
+                  .then(() => {
+                    setShowWonUserOnCampaignExpire(true);
+                  })
+                  .then(() => {
+                    let counter = 11;
+                    setInterval(function () {
+                      counter--;
+                      if (counter >= 0) {
+                        setTimeCountDown(counter);
+                      }
+                      if (counter === 0) {
+                        clearInterval(counter);
+                      }
+                    }, 1000);
+                  });
+              }}
+            >
+              <h1 className="nft_card_content_time">{timeToShow}</h1>
+            </button>
           </div>
 
           <p className="total_entries_container text-white font-normal">

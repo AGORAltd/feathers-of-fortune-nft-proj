@@ -10,8 +10,12 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
     setModalIsOpen(false);
   }
 
-  const { isTransactionSussessful, createCampaign, transactionId, erroMsg } =
-    useContext(NftContext);
+  const {
+    isCampaignCreateationSussessful,
+    createCampaign,
+    transactionId,
+    erroMsg,
+  } = useContext(NftContext);
   const [showAlert, setShowAlert] = useState(false);
 
   const {
@@ -32,7 +36,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
 
   return (
     <>
-      {isTransactionSussessful && (
+      {isCampaignCreateationSussessful && (
         <SweetAlert
           success
           show={showAlert}
