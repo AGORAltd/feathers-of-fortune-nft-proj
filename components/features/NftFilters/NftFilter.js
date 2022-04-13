@@ -15,13 +15,13 @@ const NftFilter = () => {
 
   return (
     <>
-      <div className="text-white my-4 flex justify-between">
-        <div className="flex justify-between">
+      <div className="text-white my-4 flex justify-between flex-col md:flex-row">
+        <div className="flex justify-between flex-col md:flex-row my-2 md:my-0">
           <button
             onClick={() => {
               sendToRouteOnClick("/");
             }}
-            className="filter_button py-2 px-6 mx-2 rounded"
+            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
           >
             Hot
           </button>
@@ -30,7 +30,7 @@ const NftFilter = () => {
             onClick={() => {
               sendToRouteOnClick("new");
             }}
-            className="filter_button py-2 px-6 mx-2 rounded"
+            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
           >
             New
           </button>
@@ -39,7 +39,7 @@ const NftFilter = () => {
             onClick={() => {
               sendToRouteOnClick("ending-soon");
             }}
-            className="filter_button py-2 px-6 mx-2 rounded"
+            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
           >
             Ending Soon
           </button>
@@ -47,7 +47,7 @@ const NftFilter = () => {
             onClick={() => {
               sendToRouteOnClick("ended");
             }}
-            className="filter_button py-2 px-6 mx-2 rounded"
+            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
           >
             Ended
           </button>
@@ -55,7 +55,7 @@ const NftFilter = () => {
           <CreateCampaignBtn />
         </div>
 
-        <div>
+        <div className="mx-auto md:mx-2">
           {pathname != "/ended" && (
             <select className="filter_button py-2 px-6 rounded mx-2">
               <option>Price</option>

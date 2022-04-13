@@ -257,7 +257,7 @@ const NftCard = ({
           <div className="entrants_container cursor-pointer">
             <p className="entrants_counter font-semibold py-2.5">Entrants</p>
 
-            {joinedAccounts.length > 0 ? (
+            {joinedAccounts?.length > 0 ? (
               joinedAccounts.map((item) => {
                 return (
                   <p className="py-2 my-2 hidden entrants_indicator rounded text-white">

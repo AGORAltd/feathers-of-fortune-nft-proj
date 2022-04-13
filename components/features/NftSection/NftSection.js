@@ -10,7 +10,7 @@ const NftSection = () => {
   return (
     <div className="container my-20 mx-auto">
       <NftFilter />
-      <div className="grid grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {nftCardData != undefined &&
           nftCardData.map((item, index) => {
             return (
