@@ -5,13 +5,17 @@ import NftFilter from "../NftFilters/NftFilter";
 import NftCard from "./components/NftCard";
 
 const NftSection = () => {
-  const { nftCardData } = useContext(NftContext);
+  const { nftCardData, nftDataLoading } = useContext(NftContext);
 
   return (
     <div className="container my-20 mx-auto">
       <NftFilter />
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {nftCardData != undefined &&
+        {nftDataLoading ? (
+          <div className="flex items-center justify-center w-screen">
+            <div className="nft_data_loader" />
+          </div>
+        ) : nftCardData !== undefined ? (
           nftCardData.map((item, index) => {
             return (
               <>
@@ -34,7 +38,10 @@ const NftSection = () => {
                 </div>
               </>
             );
-          })}
+          })
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

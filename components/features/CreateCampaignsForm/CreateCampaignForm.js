@@ -39,7 +39,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
       setShowError(true);
       setModalIsOpen(false);
     }
-  }, [erroMsg, transactionIdFromCreation, isCampaignCreateationSussessful]);
+  }, [erroMsg, transactionIdFromCreation]);
 
   return (
     <>

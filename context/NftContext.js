@@ -32,14 +32,15 @@ export const NftContextProvider = ({ children }) => {
   const [isAuthorizedUser, setIsAuthorizedUser] = useState(false);
   const [isCampaignCreateationSussessful, setIsCampaignCreateationSussessful] =
     useState();
-  const [transactionId, setTransactionId] = useState(null);
+  const [transactionId, setTransactionId] = useState("");
   const [transactionIdFromCreation, setTransactionIdFromCreation] = useState();
   const [erroMsg, setErroMsg] = useState("");
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [userLoginProvider, setUserLoginProvider] = useState();
-  const [campaignDataOnExpire, setCampaignDataOnExpire] = useState();
-  const [wonUserOnCampaignExpire, setWonUserOnCampaignExpire] = useState();
+  const [wonUserOnCampaignExpire, setWonUserOnCampaignExpire] = useState("");
   const [isTransactionSussessful, setIsTransactionSussessful] = useState();
+
+  const [nftDataLoading, setNftDataLoading] = useState(false);
 
   let pageSize = 8;
 
@@ -82,14 +83,14 @@ export const NftContextProvider = ({ children }) => {
 
   useEffect(() => {
     switchApiCallAccordingToActiveUserRoute();
-  }, [pathname]);
+  }, [pathname, transactionId]);
 
   useEffect(() => {
     pushNftCardDataToArray(startIndex, endIndex);
     campaignData?.length <= pageSize || campaignData == null
       ? setShowPagination(false)
       : setShowPagination(true);
-  }, [campaignData, startIndex, endIndex]);
+  }, [campaignData, startIndex, endIndex, transactionId]);
 
   useEffect(() => {
     setUserLoginProvider("");
@@ -176,9 +177,10 @@ export const NftContextProvider = ({ children }) => {
             }
           }
           const newSortedArray = runningCampaignsData.sort((a, b) => {
-            return +new Date(a?.last_roll) - +new Date(b?.last_roll);
+            return (
+              Date.parse(`${a?.last_roll}Z`) - Date.parse(`${b?.last_roll}Z`)
+            );
           });
-          console.log(newSortedArray);
           setCampaignData(newSortedArray);
         })
         .catch((error) => {
@@ -209,7 +211,7 @@ export const NftContextProvider = ({ children }) => {
     endIndex = endIndex
   ) => {
     const nftCardDataFromApi = [];
-    setIsLoadingData(true);
+    setNftDataLoading(true);
     if (campaignData) {
       if (pathname == "/" || pathname == "/new" || pathname == "/ending-soon") {
         for (let i = startIndex; i < endIndex; i++) {
@@ -267,7 +269,8 @@ export const NftContextProvider = ({ children }) => {
         setNftCardData(nftCardDataFromApi);
       }
     }
-    setIsLoadingData(false);
+
+    setNftDataLoading(false);
   };
 
   const getAuthUsers = async () => {
@@ -296,7 +299,6 @@ export const NftContextProvider = ({ children }) => {
   };
 
   const createCampaign = async (dataToSend) => {
-    console.log(userAccount);
     try {
       const results = await wax.api?.transact(
         {
@@ -323,7 +325,6 @@ export const NftContextProvider = ({ children }) => {
       );
       setIsTransactionSussessful(true);
     } catch (error) {
-      setTransactionIdFromCreation("");
       setErroMsg(error.message != "" && error.message);
       setIsCampaignCreateationSussessful(false);
       console.log(error?.message);
@@ -362,36 +363,10 @@ export const NftContextProvider = ({ children }) => {
     }
   };
 
-  const getWinnerWhenExpired = async (assetIdToFindWith) => {
-    await axios
-      .post(`${WAX_PINK_END_POINT}/v1/chain/get_table_rows`, {
-        json: true,
-        code: "fortunebirds",
-        scope: "fortunebirds",
-        table: "results",
-        limit: 1000,
-      })
-      .then((response) => {
-        setCampaignDataOnExpire(response.data?.rows);
-
-        const currentWinner = campaignDataOnExpire?.find((item) => {
-          return item.asset_id == assetIdToFindWith;
-        });
-        setWonUserOnCampaignExpire(currentWinner?.winner);
-        return wonUserOnCampaignExpire;
-      })
-      .catch((error) => {
-        return error;
-        console.log(error);
-      });
-  };
-
   return (
     <NftContext.Provider
       value={{
         wonUserOnCampaignExpire,
-        campaignDataOnExpire,
-        getWinnerWhenExpired,
         nftCardData,
         isLoadingData,
         showPagination,
@@ -421,6 +396,7 @@ export const NftContextProvider = ({ children }) => {
         userLoginProvider,
         transactionIdFromCreation,
         anchorLink,
+        nftDataLoading,
       }}
     >
       {children}

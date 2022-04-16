@@ -19,3 +19,7 @@
   background-color: #5f5dbb;
   outline: 1px solid slategrey;
 }
+
+* {
+  /* overflow-x: hidden; */
+}

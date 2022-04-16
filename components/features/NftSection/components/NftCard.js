@@ -5,6 +5,9 @@ import { NftContext } from "../../../../context/NftContext";
 import { useState } from "react";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { useEffect } from "react";
+import { WAX_PINK_END_POINT } from "../../../constants/constants";
+import axios from "axios";
+import { imgSrc } from "../../imgSrc";
 
 const NftCard = ({
   nftSrc,
@@ -29,32 +32,32 @@ const NftCard = ({
     setIsTransactionSussessful,
     userAccount,
     setErroMsg,
-    getWinnerWhenExpired,
     wonUserOnCampaignExpire,
   } = useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
   const [showTransactionMessage, setShowTransactionMessage] = useState();
   const [showNotLoggedInMsg, setShowNotLoggedInMsg] = useState(false);
+  const [showWinner, setShowWinner] = useState(false);
 
-  const [showErrorMessage, setShowErrorMessage] = useState();
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const [timeToShow, setTimeToShow] = useState("");
 
-  const [timeCountDown, setTimeCountDown] = useState(10);
+  const [openModal, setOpenModal] = useState(true);
 
-  const [showWonUserOnCampaignExpire, setShowWonUserOnCampaignExpire] =
-    useState(false);
+  const [timeCountDown, setTimeCountDown] = useState(15);
 
   useEffect(() => {
-    if (erroMsg != "") {
+    if (transactionId) {
+      setShowTransactionMessage(true);
+      setShowErrorMessage(false);
+    } else if (erroMsg != "") {
       setShowErrorMessage(true);
       setShowTransactionMessage(false);
-    } else {
-      setShowErrorMessage(false);
-      setShowTransactionMessage(true);
+      console.log(erroMsg);
     }
-  }, [erroMsg]);
+  }, [transactionId]);
 
   useEffect(() => {
     updateTimeToShow(finalUTCEpochTimeInMilliSec);
@@ -86,8 +89,6 @@ const NftCard = ({
   const finalUTCEpochTimeInMilliSec =
     Date.parse(`${lastRoll}Z`) + loopTimeSeconds * 1000;
 
-  () => {};
-
   return (
     <>
       <SweetAlert
@@ -105,6 +106,7 @@ const NftCard = ({
           OK
         </button>
       </SweetAlert>
+
       <SweetAlert
         custom
         show={showAlert}
@@ -148,6 +150,7 @@ const NftCard = ({
           />
         ) : (
           <video
+            width={"100%"}
             className="video_nft object-cover"
             loop
             muted
@@ -165,10 +168,10 @@ const NftCard = ({
         </p>
       </SweetAlert>
 
-      {isTransactionSussessful && (
+      {isTransactionSussessful ? (
         <SweetAlert
           success
-          show={isTransactionSussessful}
+          show={showTransactionMessage}
           style={{ color: "white", backgroundColor: "#1d2228" }}
           title="Successfully Joined!"
           customButtons={
@@ -187,9 +190,7 @@ const NftCard = ({
         >
           <p>Transaction Id : {transactionId} </p>
         </SweetAlert>
-      )}
-
-      {erroMsg && (
+      ) : erroMsg != "" ? (
         <SweetAlert
           danger
           show={showErrorMessage}
@@ -199,7 +200,7 @@ const NftCard = ({
             <>
               <button
                 onClick={() => {
-                  setErroMsg("");
+                  setShowErrorMessage(false);
                 }}
                 style={{ backgroundColor: "#5f5dbb" }}
                 className=" px-6 py-3"
@@ -211,56 +212,9 @@ const NftCard = ({
         >
           <p>{erroMsg}</p>
         </SweetAlert>
+      ) : (
+        ""
       )}
-
-      {/* SHOW WON USER MODAL STARTS HERE */}
-
-      <SweetAlert
-        custom
-        show={showWonUserOnCampaignExpire}
-        style={{ backgroundColor: "#1d2228", color: "white" }}
-        customButtons={
-          <>
-            <button
-              onClick={() => {
-                setShowWonUserOnCampaignExpire(false);
-              }}
-              style={{ backgroundColor: "#5f5dbb" }}
-              className=" px-6 py-3 mx-2 rounded-lg"
-            >
-              OK
-            </button>
-          </>
-        }
-      >
-        {!isVideo ? (
-          <Image
-            height={110}
-            width={"100%"}
-            loading="lazy"
-            src={nftSrc}
-            objectFit={"fill"}
-            layout={"responsive"}
-          />
-        ) : (
-          <video
-            className="video_nft object-cover"
-            loop
-            muted
-            autoPlay
-            controls=""
-          >
-            <source src={videoNftUrl} type="video/mp4" />
-            <source src={videoNftUrl} type="video/ogg" />
-          </video>
-        )}
-
-        <p className="pt-5">
-          {timeCountDown <= 0
-            ? `Winner of the contest is ${wonUserOnCampaignExpire}`
-            : ` Revealing the winner in ${timeCountDown}`}
-        </p>
-      </SweetAlert>
 
       <div className="rounded nft_card_container">
         <a
@@ -304,23 +258,19 @@ const NftCard = ({
                   ? "pointer-events-auto"
                   : "pointer-events-none"
               }`}
-              onClick={async () => {
-                await getWinnerWhenExpired(assetId)
-                  .then(() => {
-                    setShowWonUserOnCampaignExpire(true);
-                  })
-                  .then(() => {
-                    let counter = 11;
-                    setInterval(function () {
-                      counter--;
-                      if (counter >= 0) {
-                        setTimeCountDown(counter);
-                      }
-                      if (counter === 0) {
-                        clearInterval(counter);
-                      }
-                    }, 1000);
-                  });
+              onClick={() => {
+                let counter = 16;
+                setInterval(function () {
+                  counter--;
+                  if (counter >= 0) {
+                    setTimeCountDown(counter);
+                  }
+                  if (counter === 0) {
+                    clearInterval(counter);
+                    setTimeCountDown(0);
+                  }
+                }, 1000);
+                setShowWinner(true);
               }}
             >
               <h1 className="nft_card_content_time">{timeToShow}</h1>
@@ -362,8 +312,89 @@ const NftCard = ({
           </div>
         </div>
       </div>
+      {showWinner && (
+        <GetWinnerWhenExpired
+          assetIdToFindWith={assetId}
+          openModal={openModal}
+          timeCountDown={timeCountDown}
+          handleClose={() => {
+            setShowWinner(false);
+          }}
+        />
+      )}
     </>
   );
 };
 
 export default NftCard;
+
+const GetWinnerWhenExpired = ({
+  assetIdToFindWith = "",
+  openModal = true,
+  timeCountDown,
+  handleClose,
+}) => {
+  const [currentWinnerUser, setCurrentWinnerUser] = useState("");
+  const [imgSrcFinal, setImgSrcFinal] = useState("");
+
+  useEffect(() => {
+    return async () => {
+      const response = await axios.post(
+        `${WAX_PINK_END_POINT}/v1/chain/get_table_rows`,
+        {
+          json: true,
+          code: "fortunebirds",
+          scope: "fortunebirds",
+          table: "results",
+          limit: 1000,
+        }
+      );
+
+      let campaignDataOnExpire = await response.data?.rows;
+
+      const currentWinner = await campaignDataOnExpire?.find((item) => {
+        return item?.asset_id == assetIdToFindWith;
+      });
+
+      setCurrentWinnerUser(() => currentWinner?.winner);
+    };
+  }, [currentWinnerUser]);
+
+  useEffect(() => {
+    randomImageSelector(imgSrc);
+  }, [imgSrcFinal]);
+
+  const randomImageSelector = (items) => {
+    const imgSrcFromArray = items[Math.floor(Math.random() * items.length)];
+    setImgSrcFinal(imgSrcFromArray);
+  };
+
+  return (
+    <>
+      <SweetAlert
+        custom
+        show={openModal}
+        style={{ backgroundColor: "#1d2228", color: "white" }}
+        customButtons={
+          <>
+            <button
+              onClick={handleClose}
+              style={{ backgroundColor: "#5f5dbb" }}
+              className=" px-6 py-3 mx-2 rounded-lg"
+            >
+              OK
+            </button>
+          </>
+        }
+      >
+        <img src={`${imgSrcFinal}`} />
+
+        <p className="pt-5">
+          {timeCountDown <= 0
+            ? `Winner of the contest is ${currentWinnerUser}`
+            : ` Revealing the winner in ${timeCountDown}`}
+        </p>
+      </SweetAlert>
+    </>
+  );
+};
