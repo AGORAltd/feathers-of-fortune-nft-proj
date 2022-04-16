@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { useState, createContext, useEffect } from "react";
 import {
   ATOMIC_ASSETS_END_POINT,
@@ -184,10 +185,21 @@ export const NftContextProvider = ({ children }) => {
               runningCampaignsData.push(runningCampaigns);
             }
           }
-          const newSortedArray = runningCampaignsData.sort((a, b) => {
-            return Date.parse(a?.last_roll) - Date.parse(b?.last_roll);
+
+          runningCampaignsData.sort((a, b) => {
+            let aTime = a?.last_roll;
+            let bTime = b?.last_roll;
+
+            if (bTime.getUTCHours() - aTime.getUTCHours() != 0) {
+              return aTime.getUTCHours() - bTime.getUTCHours();
+            } else if (bTime.getUTCMinutes() - aTime.getUTCMinutes() != 0) {
+              return bTime.getUTCMinutes() - aTime.getUTCMinutes();
+            } else if (bTime.getUTCSeconds() - aTime.getUTCSeconds() != 0) {
+              return bTime.getUTCSeconds() - aTime.getUTCSeconds();
+            }
           });
-          setCampaignData(newSortedArray);
+
+          setCampaignData(runningCampaignsData);
         })
         .catch((error) => {
           console.log(error);
