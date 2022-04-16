@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useContext } from "react";
 import { NftContext } from "../../../context/NftContext";
 import SweetAlert from "react-bootstrap-sweetalert";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
   function closeModal() {
@@ -13,16 +13,14 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
   const {
     isCampaignCreateationSussessful,
     createCampaign,
-    transactionId,
+    transactionIdFromCreation,
     erroMsg,
   } = useContext(NftContext);
   const [showAlert, setShowAlert] = useState(false);
+  const [showError, setShowError] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit } = useForm();
+
   const onSubmit = async (data) => {
     await createCampaign({
       ...data,
@@ -30,59 +28,64 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
       templateID: 0,
       quantity_req: 0,
     });
-    setModalIsOpen(false);
-    setShowAlert(true);
   };
+
+  useEffect(() => {
+    if (transactionIdFromCreation) {
+      setShowAlert(true);
+      setModalIsOpen(false);
+    } else if (erroMsg != "") {
+      console.log(erroMsg);
+      setShowError(true);
+      setModalIsOpen(false);
+    }
+  }, [erroMsg, transactionIdFromCreation, isCampaignCreateationSussessful]);
 
   return (
     <>
-      {isCampaignCreateationSussessful && (
-        <SweetAlert
-          success
-          show={showAlert}
-          style={{ color: "white", backgroundColor: "#1d2228" }}
-          title="Campaign Created!"
-          customButtons={
-            <>
-              <button
-                onClick={() => {
-                  window.location.reload();
-                }}
-                style={{ backgroundColor: "#5f5dbb !important" }}
-                className=" px-6 py-3"
-              >
-                OK
-              </button>
-            </>
-          }
-        >
-          <p>Transaction Id : {transactionId} </p>
-        </SweetAlert>
-      )}
+      <SweetAlert
+        success
+        show={showAlert}
+        style={{ color: "white", backgroundColor: "#1d2228" }}
+        title="Campaign Created!"
+        customButtons={
+          <>
+            <button
+              onClick={() => {
+                setShowAlert(false);
+              }}
+              style={{ backgroundColor: "#5f5dbb !important" }}
+              className=" px-6 py-3"
+            >
+              OK
+            </button>
+          </>
+        }
+      >
+        <p>Transaction Id : {transactionIdFromCreation} </p>
+      </SweetAlert>
 
-      {erroMsg && (
-        <SweetAlert
-          danger
-          show={showAlert}
-          style={{ backgroundColor: "#1d2228" }}
-          title=""
-          customButtons={
-            <>
-              <button
-                onClick={() => {
-                  setShowAlert(false);
-                }}
-                style={{ backgroundColor: "#5f5dbb" }}
-                className=" px-6 py-3"
-              >
-                OK
-              </button>
-            </>
-          }
-        >
-          <p>{erroMsg}</p>
-        </SweetAlert>
-      )}
+      <SweetAlert
+        danger
+        show={showError}
+        style={{ backgroundColor: "#1d2228" }}
+        title=""
+        customButtons={
+          <>
+            <button
+              onClick={() => {
+                setShowError(false);
+              }}
+              style={{ backgroundColor: "#5f5dbb" }}
+              className=" px-6 py-3"
+            >
+              OK
+            </button>
+          </>
+        }
+      >
+        <p>{erroMsg}</p>
+      </SweetAlert>
 
       <SweetAlert
         style={{ width: "640px", backgroundColor: "#1d2228" }}

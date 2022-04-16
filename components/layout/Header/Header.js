@@ -5,11 +5,16 @@ import { useState } from "react";
 import { NftContext } from "../../../context/NftContext";
 
 const Header = () => {
-  const { waxUserLogIn, userAccount, setUserLoginProvider } =
+  const { userAccountLogin, userAccount, setUserLoginProvider, anchorLink } =
     useContext(NftContext);
 
   const [userLoginPopup, setUserLoginPopup] = useState(false);
   const [sideBarOpen, setSideBarOpen] = useState(false);
+
+  const logoutFromApp = () => {
+    anchorLink.clearSessions("PIXELCAMPAIGN");
+    window.location.href = "https://all-access.wax.io/logout";
+  };
   return (
     <>
       <SweetAlert
@@ -26,8 +31,9 @@ const Header = () => {
             style={{ background: "#14181d" }}
             className="flex items-center justify-between px-3 py-1 my-4"
             onClick={() => {
-              setUserLoginPopup(false);
               setUserLoginProvider("wax");
+              setUserLoginPopup(false);
+              userAccountLogin();
             }}
           >
             <p>Wax Cloud Wallet </p>
@@ -36,8 +42,9 @@ const Header = () => {
           <button
             style={{ background: "#14181d" }}
             onClick={() => {
-              setUserLoginPopup(false);
               setUserLoginProvider("anchor");
+              setUserLoginPopup(false);
+              userAccountLogin();
             }}
             className="flex items-center justify-between px-3 py-1"
           >
@@ -104,14 +111,7 @@ const Header = () => {
           ) : (
             <div className="flex items-center">
               <div className="user_account_name mx-4">{userAccount}</div>
-              <button
-                className="login_button mx-4"
-                onClick={() => {
-                  if (typeof window !== undefined) {
-                    window.location.href = "https://all-access.wax.io/logout";
-                  }
-                }}
-              >
+              <button className="login_button mx-4" onClick={logoutFromApp}>
                 Logout
               </button>
             </div>
@@ -141,13 +141,8 @@ const Header = () => {
                     {userAccount}
                   </div>
                   <button
-                    className="login_button mx-4 my-1 my-2"
-                    onClick={() => {
-                      if (typeof window !== undefined) {
-                        window.location.href =
-                          "https://all-access.wax.io/logout";
-                      }
-                    }}
+                    className="login_button mx-4 my-2"
+                    onClick={logoutFromApp}
                   >
                     Logout
                   </button>
