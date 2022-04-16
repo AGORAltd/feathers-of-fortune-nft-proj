@@ -35,7 +35,7 @@ const NftCard = ({
   } = useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
-  const [showTransactionMessage, setShowTransactionMessage] = useState();
+  const [showTransactionMessage, setShowTransactionMessage] = useState(false);
   const [showNotLoggedInMsg, setShowNotLoggedInMsg] = useState(false);
   const [showWinner, setShowWinner] = useState(false);
 
@@ -59,6 +59,9 @@ const NftCard = ({
   }, [transactionId]);
 
   useEffect(() => {
+    if (totalEntriesEnd == totalEntriesStart) {
+      setTimeToShow("Reveal Winner");
+    }
     updateTimeToShow(finalUTCEpochTimeInMilliSec);
   }, [timeToShow]);
 
@@ -288,7 +291,11 @@ const NftCard = ({
             onClick={() => {
               userAccount ? setShowAlert(true) : setShowNotLoggedInMsg(true);
             }}
-            className="join_campaign_now_btn my-2.5"
+            className={`my-2.5 ${
+              timeToShow == "Reveal Winner"
+                ? "bg-zinc-500 py-2 px-2 rounded-md text-white pointer-events-none"
+                : "join_campaign_now_btn"
+            }`}
           >
             JOIN NOW
           </button>

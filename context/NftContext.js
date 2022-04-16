@@ -61,6 +61,30 @@ export const NftContextProvider = ({ children }) => {
     checkIfAutoLoginAvailable();
   }, []);
 
+  useEffect(() => {
+    checkIfAuthorizeduser();
+  }, [authUserData]);
+
+  useEffect(() => {
+    switchApiCallAccordingToActiveUserRoute();
+    setErroMsg("");
+    setTransactionId(null);
+    setIsTransactionSussessful(false);
+    setTransactionIdFromCreation("");
+  }, [pathname, transactionId]);
+
+  useEffect(() => {
+    pushNftCardDataToArray(startIndex, endIndex);
+    campaignData?.length <= pageSize || campaignData == null
+      ? setShowPagination(false)
+      : setShowPagination(true);
+  }, [campaignData, startIndex, endIndex, transactionId]);
+
+  useEffect(() => {
+    setUserLoginProvider("");
+    userAccountLogin();
+  }, [userLoginProvider]);
+
   const checkIfAutoLoginAvailable = async () => {
     let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
     let sessionList = await anchorLink.listSessions(dapp);
@@ -78,29 +102,6 @@ export const NftContextProvider = ({ children }) => {
       setUserLoginProvider("wax");
     }
   };
-
-  useEffect(() => {
-    checkIfAuthorizeduser();
-  }, [authUserData]);
-
-  useEffect(() => {
-    setErroMsg("");
-    switchApiCallAccordingToActiveUserRoute();
-    setTransactionId(null);
-    setIsTransactionSussessful(null);
-  }, [pathname, transactionId]);
-
-  useEffect(() => {
-    pushNftCardDataToArray(startIndex, endIndex);
-    campaignData?.length <= pageSize || campaignData == null
-      ? setShowPagination(false)
-      : setShowPagination(true);
-  }, [campaignData, startIndex, endIndex, transactionId]);
-
-  useEffect(() => {
-    setUserLoginProvider("");
-    userAccountLogin();
-  }, [userLoginProvider]);
 
   const userAccountLogin = () => {
     if (userLoginProvider == "anchor") {
@@ -184,9 +185,7 @@ export const NftContextProvider = ({ children }) => {
             }
           }
           const newSortedArray = runningCampaignsData.sort((a, b) => {
-            return (
-              Date.parse(`${b?.last_roll}Z`) - Date.parse(`${a?.last_roll}Z`)
-            );
+            return Date.parse(a?.last_roll) - Date.parse(b?.last_roll);
           });
           setCampaignData(newSortedArray);
         })
