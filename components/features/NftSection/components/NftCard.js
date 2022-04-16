@@ -32,7 +32,6 @@ const NftCard = ({
     setIsTransactionSussessful,
     userAccount,
     setErroMsg,
-    wonUserOnCampaignExpire,
   } = useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
