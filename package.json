@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && next export",
     "start": "next start",
-    "lint": "next lint",
-    "export": "next export"
+    "lint": "next lint"
   },
   "dependencies": {
     "@waxio/waxjs": "^1.0.4",
@@ -28,7 +27,6 @@
     "@babel/preset-env": "^7.16.11",
     "autoprefixer": "^10.4.4",
     "cross-env": "^7.0.3",
-    "eslint": "^5.16.0",
     "eslint-config-next": "12.1.4",
     "postcss": "^8.4.12",
     "rimraf": "^3.0.2",
