@@ -236,7 +236,15 @@ const NftCard = ({
             />
           ) : (
             <div>
-              <video
+              <iframe
+                height="326px"
+                src={`${videoNftUrl}`}
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+
+              {/* <video
                 height="326px"
                 className="video_nft"
                 autoPlay
@@ -245,7 +253,7 @@ const NftCard = ({
                 controls
               >
                 <source src={`${videoNftUrl}`} />
-              </video>
+              </video> */}
             </div>
           )}
         </a>
