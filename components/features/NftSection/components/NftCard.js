@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import { WAX_PINK_END_POINT } from "../../../constants/constants";
 import axios from "axios";
 import { imgSrc } from "../../imgSrc";
-import ReactPlayer from "react-player";
 
 const NftCard = ({
   nftSrc,
