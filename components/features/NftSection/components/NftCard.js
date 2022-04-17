@@ -239,9 +239,7 @@ const NftCard = ({
               <iframe
                 height="326px"
                 src={`${videoNftUrl}`}
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
+                title="atomichub"
               ></iframe>
 
               {/* <video
