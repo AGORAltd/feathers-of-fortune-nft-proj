@@ -95,6 +95,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
         showConfirm={false}
         showCancel={false}
         showCloseButton={false}
+        title=""
       >
         <div className="w-full h-full campaign_creation_form">
           <h2 className="text-3xl font-bold text-center text-white">

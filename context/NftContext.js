@@ -75,7 +75,12 @@ export const NftContextProvider = ({ children }) => {
   }, [pathname, transactionId]);
 
   useEffect(() => {
-    pushNftCardDataToArray(startIndex, endIndex);
+    pushNftCardDataToArray(
+      startIndex,
+      campaignData != undefined && campaignData?.length > 8
+        ? endIndex
+        : campaignData?.length
+    );
     campaignData?.length <= pageSize || campaignData == null
       ? setShowPagination(false)
       : setShowPagination(true);

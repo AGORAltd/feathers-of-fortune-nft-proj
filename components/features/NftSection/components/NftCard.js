@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { WAX_PINK_END_POINT } from "../../../constants/constants";
 import axios from "axios";
 import { imgSrc } from "../../imgSrc";
+import ReactPlayer from "react-player";
 
 const NftCard = ({
   nftSrc,
@@ -111,6 +112,7 @@ const NftCard = ({
 
       <SweetAlert
         custom
+        title=""
         show={showAlert}
         style={{ backgroundColor: "#1d2228", color: "white" }}
         customButtons={
@@ -234,16 +236,18 @@ const NftCard = ({
               layout={"responsive"}
             />
           ) : (
-            <video
-              className="video_nft object-cover"
-              loop
-              muted
-              autoPlay
-              controls=""
-            >
-              <source src={videoNftUrl} type="video/mp4" />
-              <source src={videoNftUrl} type="video/ogg" />
-            </video>
+            <div>
+              <video
+                height="326px"
+                className="video_nft"
+                autoPlay
+                loop
+                playsInline
+                controls
+              >
+                <source src={`${videoNftUrl}`} />
+              </video>
+            </div>
           )}
         </a>
 
@@ -379,6 +383,7 @@ const GetWinnerWhenExpired = ({
     <>
       <SweetAlert
         custom
+        title=""
         show={openModal}
         style={{ backgroundColor: "#1d2228", color: "white" }}
         customButtons={
