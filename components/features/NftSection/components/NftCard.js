@@ -236,37 +236,17 @@ const NftCard = ({
             />
           ) : (
             <div>
-              <iframe
+              <video
                 height="326px"
                 width={"100%"}
-                src={`${videoNftUrl}`}
-                title="atomichub"
-                allowTransparency="true"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe>
-
-              {/* <iframe
-                width="859"
-                height="483"
-                src="https://www.youtube.com/embed/lex3qZAf_Ok"
-                title="YouTube video player"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe> */}
-
-              {/* <video
-                height="326px"
-                className="video_nft"
-                autoPlay
+                className="video_nft object-cover"
+                autoPlay="true"
                 loop
-                playsInline
-                controls
+                muted
+                controls=""
               >
                 <source src={`${videoNftUrl}`} />
-              </video> */}
+              </video>
             </div>
           )}
         </a>
