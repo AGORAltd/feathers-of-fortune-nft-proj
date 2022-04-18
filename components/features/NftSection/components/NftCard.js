@@ -182,6 +182,7 @@ const NftCard = ({
               <button
                 onClick={() => {
                   setIsTransactionSussessful(false);
+                  window.location.reload();
                 }}
                 style={{ backgroundColor: "#5f5dbb" }}
                 className=" px-6 py-3"
@@ -240,7 +241,7 @@ const NftCard = ({
                 height="326px"
                 width={"100%"}
                 className="video_nft object-cover"
-                autoPlay="true"
+                autoPlay={true}
                 loop
                 muted
                 controls=""

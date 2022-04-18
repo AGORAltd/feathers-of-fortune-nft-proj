@@ -243,12 +243,13 @@ export const NftContextProvider = ({ children }) => {
               `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${campaignData[i]?.asset_ids[0]}`
             )
             .then((response) => {
+              console.log(`${IPFS_URL}/${response?.data?.data?.data?.video}`);
               nftCardDataFromApi.push({
                 joinedAccounts: campaignData[i]?.accounts,
                 assetId: response.data?.data?.asset_id,
                 contractAccount: campaignData[i]?.contract_account,
                 nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
-                videoNftUrl: `${IPFS_URL}/${response?.data?.data?.data?.video}`,
+                videoNftUrl: `${IPFS_URL}/${response?.data?.data?.template?.immutable_data?.video}`,
                 isVideo:
                   `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
                     ? false
