@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         // matching all API routes
-        source: "/atomicassets/v1/assets/:path*",
+        source: "https://wax.api.atomicassets.io/atomicassets/v1/assets/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
