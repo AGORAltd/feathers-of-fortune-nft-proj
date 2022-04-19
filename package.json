@@ -2,6 +2,11 @@
   "name": "feathers_of_fortune_next_app",
   "version": "0.1.0",
   "private": true,
+  "proxy": {
+    "/atomicassets/v1/assets": {
+      "target": "https://wax.api.atomicassets.io"
+    }
+  },
   "scripts": {
     "dev": "node server.js",
     "build": "next build",
@@ -27,6 +32,7 @@
     "autoprefixer": "^10.4.4",
     "cross-env": "^7.0.3",
     "eslint-config-next": "12.1.4",
+    "http-proxy-middleware": "^2.0.4",
     "postcss": "^8.4.12",
     "rimraf": "^3.0.2",
     "tailwindcss": "^3.0.23"
