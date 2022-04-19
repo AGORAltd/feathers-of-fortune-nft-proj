@@ -155,7 +155,6 @@ const NftCard = ({
           <video
             width={"100%"}
             className="video_nft object-cover"
-            loop
             muted
             autoPlay
             controls=""
@@ -241,12 +240,9 @@ const NftCard = ({
                 height="326px"
                 width={"100%"}
                 className="video_nft object-cover"
-                loop
-                muted
                 controls
-                preload="none"
               >
-                <source src={`${videoNftUrl}`} />
+                <source src={`${videoNftUrl}`} type="video/mp4" />
               </video>
             </div>
           )}
