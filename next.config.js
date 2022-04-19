@@ -14,6 +14,15 @@ const nextConfig = {
       "/new": { page: "/new" },
     };
   },
+
+  async rewrites() {
+    return [
+      {
+        source: "/atomicassets/v1/assets",
+        destination: "https://wax.api.atomicassets.io",
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

@@ -2,11 +2,6 @@
   "name": "feathers_of_fortune_next_app",
   "version": "0.1.0",
   "private": true,
-  "proxy": {
-    "/atomicassets/v1/assets": {
-      "target": "https://wax.api.atomicassets.io"
-    }
-  },
   "scripts": {
     "dev": "node server.js",
     "build": "next build",
