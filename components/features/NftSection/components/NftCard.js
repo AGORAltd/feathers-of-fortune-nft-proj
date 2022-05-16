@@ -119,11 +119,15 @@ const NftCard = ({
           <>
             <button
               onClick={async () => {
-                await joinCampaign(contractAccount, campaignId, entryCost).then(
-                  () => {
-                    setShowAlert(false);
-                  }
-                );
+                await joinCampaign(
+                  contractAccount,
+                  campaignId,
+                  entryCost,
+                  assetId,
+                  joinedAccounts
+                ).then(() => {
+                  setShowAlert(false);
+                });
               }}
               style={{ backgroundColor: "#5f5dbb" }}
               className=" px-6 py-3 mx-2 rounded-lg"

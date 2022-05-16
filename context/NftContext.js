@@ -2,8 +2,6 @@ import axios from "axios";
 
 import { useState, createContext, useEffect } from "react";
 import {
-  ATOMIC_ASSETS_END_POINT,
-  IPFS_URL,
   RPC_ENDPOINT,
   WAX_PINK_END_POINT,
 } from "../components/constants/constants";
@@ -12,19 +10,8 @@ import * as waxjs from "@waxio/waxjs/dist";
 import { StartFirebase } from "./firebase-config";
 import AnchorLink from "anchor-link";
 import AnchorLinkBrowserTransport from "anchor-link-browser-transport";
-
 export const NftContext = createContext();
-
-import {
-  ref,
-  set,
-  get,
-  update,
-  remove,
-  onValue,
-  Database,
-  child,
-} from "firebase/database";
+import { ref, update } from "firebase/database";
 
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
@@ -49,11 +36,8 @@ export function NftContextProvider({ children }) {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [userLoginProvider, setUserLoginProvider] = useState();
   const [isTransactionSussessful, setIsTransactionSussessful] = useState();
-
-  const [nftDataLoading, setNftDataLoading] = useState(false);
   const [anchorWalletSession, setAnchorWalletSession] = useState(null);
 
-  let pageSize = 8;
   let chainId =
     "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4";
 
@@ -228,7 +212,13 @@ export function NftContextProvider({ children }) {
     }
   };
 
-  const joinCampaign = async (contractAccount, campaignId, entryCost) => {
+  const joinCampaign = async (
+    contractAccount,
+    campaignId,
+    entryCost,
+    assetId,
+    joinedAccountsArr = []
+  ) => {
     if (anchorWalletSession) {
       try {
         const result = await anchorLink.transact(
@@ -253,6 +243,12 @@ export function NftContextProvider({ children }) {
         const transactionIdFromSuccess = await result?.transaction_id;
         setTransactionId(transactionIdFromSuccess);
         setIsTransactionSussessful(true);
+        if (result?.transaction_id) {
+          joinedAccountsArr.push(userAccount);
+          update(ref(firebaseDb, `/campaigns/${assetId}/runningCampaigns`), {
+            accounts: joinedAccountsArr,
+          });
+        }
       } catch (error) {
         const erroMsgFromCatch = await error.message;
         console.log(erroMsgFromCatch);
@@ -283,6 +279,12 @@ export function NftContextProvider({ children }) {
         const transactionIdFromSuccess = await result?.transaction_id;
         setTransactionId(transactionIdFromSuccess);
         setIsTransactionSussessful(true);
+        if (result?.transaction_id) {
+          joinedAccountsArr.push(userAccount);
+          update(ref(firebaseDb, `/campaigns/${assetId}/runningCampaigns`), {
+            accounts: joinedAccountsArr,
+          });
+        }
       } catch (error) {
         const erroMsgFromCatch = await error.message;
         console.log(erroMsgFromCatch);
@@ -321,7 +323,6 @@ export function NftContextProvider({ children }) {
         userLoginProvider,
         transactionIdFromCreation,
         anchorLink,
-        nftDataLoading,
       }}
     >
       {children}

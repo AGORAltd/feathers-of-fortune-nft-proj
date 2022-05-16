@@ -37,7 +37,7 @@ const New = () => {
             setNftCardData((prevState) => [
               ...prevState,
               {
-                joinedAccounts: singularCampaignObj?.accounts || null,
+                joinedAccounts: singularCampaignObj?.accounts || [],
                 assetId: response.data?.data?.asset_id,
                 contractAccount: singularCampaignObj?.contract_account,
                 nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
@@ -136,20 +136,17 @@ export async function getServerSideProps(context) {
   );
 
   onValue(ref(firebaseDb), (snapshot) => {
-    if (snapshot.exists()) {
-      for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
-        const runningCampaigns = responseFromPost.data?.rows[i];
+    for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
+      const runningCampaigns = responseFromPost.data?.rows[i];
 
-        if (
-          runningCampaigns?.asset_ids?.length > 0 &&
-          snapshot
-            .child("campaigns")
-            .hasChild(runningCampaigns?.asset_ids[0]) == false
-        ) {
-          set(ref(firebaseDb, `/campaigns/${runningCampaigns?.asset_ids[0]}`), {
-            runningCampaigns,
-          });
-        }
+      if (
+        runningCampaigns?.asset_ids?.length > 0 &&
+        snapshot.child("campaigns").hasChild(runningCampaigns?.asset_ids[0]) ==
+          false
+      ) {
+        set(ref(firebaseDb, `/campaigns/${runningCampaigns?.asset_ids[0]}`), {
+          runningCampaigns,
+        });
       }
     }
   });
