@@ -10,6 +10,7 @@ const NftFilter = () => {
 
   const sendToRouteOnClick = (routeName) => {
     setStartIndex(0);
+    // window.location.href = routeName;
     router.push(routeName);
   };
 

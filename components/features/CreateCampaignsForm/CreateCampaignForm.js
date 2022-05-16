@@ -48,6 +48,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
         show={showAlert}
         style={{ color: "white", backgroundColor: "#1d2228" }}
         title="Campaign Created!"
+        onConfirm={() => {}}
         customButtons={
           <>
             <button
@@ -70,6 +71,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
         show={showError}
         style={{ backgroundColor: "#1d2228" }}
         title=""
+        onConfirm={() => {}}
         customButtons={
           <>
             <button
@@ -96,6 +98,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
         showCancel={false}
         showCloseButton={false}
         title=""
+        onConfirm={() => {}}
       >
         <div className="w-full h-full campaign_creation_form">
           <h2 className="text-3xl font-bold text-center text-white">

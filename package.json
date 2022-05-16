@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
-    "build": "next build",
-    "start": "NODE_ENV=production node server.js"
+    "dev": "next dev",
+    "build": "next build & next export",
+    "start": "next start"
   },
   "dependencies": {
     "@waxio/waxjs": "^1.0.4",
@@ -13,7 +13,7 @@
     "anchor-link-browser-transport": "^3.3.0",
     "axios": "^0.26.1",
     "eslint-plugin-react": "^7.29.0",
-    "firebase": "^9.6.10",
+    "firebase": "^9.7.0",
     "next": "12.1.4",
     "react": "18.0.0",
     "react-bootstrap-sweetalert": "^5.2.0",

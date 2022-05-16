@@ -9,22 +9,32 @@ import {
 } from "../components/constants/constants";
 import { useRouter } from "next/router";
 import * as waxjs from "@waxio/waxjs/dist";
-
+import { StartFirebase } from "./firebase-config";
 import AnchorLink from "anchor-link";
 import AnchorLinkBrowserTransport from "anchor-link-browser-transport";
 
 export const NftContext = createContext();
+
+import {
+  ref,
+  set,
+  get,
+  update,
+  remove,
+  onValue,
+  Database,
+  child,
+} from "firebase/database";
 
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
   tryAutoLogin: false,
 });
 
-export const NftContextProvider = ({ children }) => {
+export function NftContextProvider({ children }) {
+  const firebaseDb = StartFirebase();
   const { pathname } = useRouter();
   const [userAccount, setUserAccount] = useState();
-  const [campaignData, setCampaignData] = useState(null);
-  const [nftCardData, setNftCardData] = useState();
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [showPagination, setShowPagination] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
@@ -44,7 +54,6 @@ export const NftContextProvider = ({ children }) => {
   const [anchorWalletSession, setAnchorWalletSession] = useState(null);
 
   let pageSize = 8;
-
   let chainId =
     "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4";
 
@@ -58,56 +67,38 @@ export const NftContextProvider = ({ children }) => {
     chains: [{ chainId: chainId, nodeUrl: `https://${nodeUrl}` }],
   });
 
-  useEffect(() => {
-    checkIfAutoLoginAvailable();
-  }, []);
+  // below function is checking if auto login is available.
+
+  if (typeof window != "undefined") {
+    window.onload = async () => {
+      let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
+      let sessionList = await anchorLink.listSessions(dapp);
+      let wallet_session;
+      if (sessionList && sessionList.length > 0) {
+        wallet_session = await anchorLink.restoreSession(dapp);
+        setUserAccount(String(wallet_session?.auth)?.split("@")[0]);
+        getAuthUsers();
+        setAnchorWalletSession(wallet_session);
+        setUserLoginProvider("anchor");
+      } else if (isAutoLoginAvailable) {
+        setUserAccount(wax.userAccount);
+        getAuthUsers();
+        setAnchorWalletSession(wallet_session);
+        setUserLoginProvider("wax");
+      }
+    };
+  }
 
   useEffect(() => {
     checkIfAuthorizeduser();
   }, [authUserData]);
 
   useEffect(() => {
-    switchApiCallAccordingToActiveUserRoute();
-    setErroMsg("");
-    setTransactionId(null);
-    setIsTransactionSussessful(false);
-    setTransactionIdFromCreation("");
-  }, [pathname, transactionId]);
-
-  useEffect(() => {
-    pushNftCardDataToArray(
-      startIndex,
-      campaignData != undefined && campaignData?.length > 8
-        ? endIndex
-        : campaignData?.length
-    );
-    campaignData?.length <= pageSize || campaignData == null
-      ? setShowPagination(false)
-      : setShowPagination(true);
-  }, [campaignData, startIndex, endIndex, transactionId]);
-
-  useEffect(() => {
     setUserLoginProvider("");
     userAccountLogin();
   }, [userLoginProvider]);
 
-  const checkIfAutoLoginAvailable = async () => {
-    let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
-    let sessionList = await anchorLink.listSessions(dapp);
-    let wallet_session;
-    if (sessionList && sessionList.length > 0) {
-      wallet_session = await anchorLink.restoreSession(dapp);
-      setUserAccount(String(wallet_session?.auth)?.split("@")[0]);
-      getAuthUsers();
-      setAnchorWalletSession(wallet_session);
-      setUserLoginProvider("anchor");
-    } else if (isAutoLoginAvailable) {
-      setUserAccount(wax.userAccount);
-      getAuthUsers();
-      setAnchorWalletSession(wallet_session);
-      setUserLoginProvider("wax");
-    }
-  };
+  // Bellow declared functions need no changes at all as of now.
 
   const userAccountLogin = () => {
     if (userLoginProvider == "anchor") {
@@ -144,156 +135,6 @@ export const NftContextProvider = ({ children }) => {
     } catch (err) {
       console.log(err);
     }
-  };
-
-  const switchApiCallAccordingToActiveUserRoute = async () => {
-    setIsLoadingData(true);
-    const runningCampaignsData = [];
-
-    if (pathname == "/" || pathname == "/new") {
-      await axios
-        .post(`${WAX_PINK_END_POINT}/v1/chain/get_table_rows`, {
-          json: true,
-          code: "fortunebirds",
-          scope: "fortunebirds",
-          table: "campaigns",
-          limit: 150,
-        })
-        .then((response) => {
-          for (let i = 0; i < response.data.rows?.length; i++) {
-            const runningCampaigns = response.data?.rows[i];
-
-            if (runningCampaigns?.asset_ids?.length > 0) {
-              runningCampaignsData.push(runningCampaigns);
-              setCampaignData(runningCampaignsData);
-            }
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      setIsLoadingData(false);
-    } else if (pathname == "/ending-soon") {
-      await axios
-        .post(`${WAX_PINK_END_POINT}/v1/chain/get_table_rows`, {
-          json: true,
-          code: "fortunebirds",
-          scope: "fortunebirds",
-          table: "campaigns",
-          limit: 150,
-        })
-        .then((response) => {
-          for (let i = 0; i < response.data.rows?.length; i++) {
-            const runningCampaigns = response.data?.rows[i];
-
-            if (runningCampaigns?.asset_ids?.length > 0) {
-              runningCampaignsData.push(runningCampaigns);
-            }
-          }
-
-          runningCampaignsData.sort((a, b) => {
-            let aTime = a?.last_roll;
-            let bTime = b?.last_roll;
-
-            if (bTime.getUTCHours() - aTime.getUTCHours() != 0) {
-              return aTime.getUTCHours() - bTime.getUTCHours();
-            } else if (bTime.getUTCMinutes() - aTime.getUTCMinutes() != 0) {
-              return bTime.getUTCMinutes() - aTime.getUTCMinutes();
-            } else if (bTime.getUTCSeconds() - aTime.getUTCSeconds() != 0) {
-              return bTime.getUTCSeconds() - aTime.getUTCSeconds();
-            }
-          });
-
-          setCampaignData(runningCampaignsData);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      setIsLoadingData(false);
-    } else {
-      await axios
-        .post(`${WAX_PINK_END_POINT}/v1/chain/get_table_rows`, {
-          json: true,
-          code: "fortunebirds",
-          scope: "fortunebirds",
-          table: "results",
-          limit: 1000,
-        })
-        .then((response) => {
-          setCampaignData(response.data.rows);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      setIsLoadingData(false);
-    }
-  };
-
-  const pushNftCardDataToArray = async (
-    startIndex = startIndex,
-    endIndex = endIndex
-  ) => {
-    const nftCardDataFromApi = [];
-    setNftDataLoading(true);
-    if (campaignData) {
-      if (pathname == "/" || pathname == "/new" || pathname == "/ending-soon") {
-        for (let i = startIndex; i < endIndex; i++) {
-          await axios
-            .get(
-              `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${campaignData[i]?.asset_ids[0]}`
-            )
-            .then((response) => {
-              nftCardDataFromApi.push({
-                joinedAccounts: campaignData[i]?.accounts,
-                assetId: response.data?.data?.asset_id,
-                contractAccount: campaignData[i]?.contract_account,
-                nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
-                videoNftUrl: `${IPFS_URL}/${response?.data?.data?.template?.immutable_data?.video}`,
-                isVideo:
-                  `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
-                    ? false
-                    : `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
-                      `${IPFS_URL}/undefined`
-                    ? true
-                    : false,
-                campaignId: campaignData[i]?.id,
-                creator: campaignData[i]?.authorized_account,
-                entryCost: campaignData[i]?.entrycost,
-                totalEntriesStart: campaignData[i]?.accounts.length,
-                totalEntriesEnd: campaignData[i]?.max_users,
-                loopTimeSeconds: campaignData[i]?.loop_time_seconds,
-                lastRoll: campaignData[i]?.last_roll,
-                totalEntriesEnd: campaignData[i]?.max_users,
-              });
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        }
-        setNftCardData(nftCardDataFromApi);
-      } else if (pathname == "/ended") {
-        for (let i = startIndex; i < endIndex; i++) {
-          await axios
-            .get(
-              `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${campaignData[i]?.asset_id}`
-            )
-            .then((response) => {
-              nftCardDataFromApi.push({
-                assetId: response.data?.data?.asset_id,
-                nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
-                campaignId: campaignData[i]?.campaign_id,
-                winner: campaignData[i]?.winner,
-              });
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        }
-        setNftCardData(nftCardDataFromApi);
-      }
-    }
-
-    setNftDataLoading(false);
   };
 
   const getAuthUsers = async () => {
@@ -454,14 +295,12 @@ export const NftContextProvider = ({ children }) => {
   return (
     <NftContext.Provider
       value={{
-        nftCardData,
         isLoadingData,
         showPagination,
         startIndex,
         setStartIndex,
         endIndex,
         setEndIndex,
-        campaignData,
         waxUserLogIn,
         userAccount,
         setUserAccount,
@@ -472,7 +311,6 @@ export const NftContextProvider = ({ children }) => {
         erroMsg,
         setIsAuthorizedUser,
         joinCampaign,
-        setNftCardData,
         currentPageIndex,
         setCurrentPageIndex,
         setUserLoginProvider,
@@ -489,4 +327,4 @@ export const NftContextProvider = ({ children }) => {
       {children}
     </NftContext.Provider>
   );
-};
+}

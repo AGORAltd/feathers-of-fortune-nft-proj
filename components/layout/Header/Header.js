@@ -21,6 +21,7 @@ const Header = () => {
         title={"Connect Wallet"}
         show={userLoginPopup}
         showConfirm={false}
+        onConfirm={() => {}}
         style={{ color: "white", background: "#1d2228" }}
         onCancel={() => {
           setUserLoginPopup(false);

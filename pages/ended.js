@@ -1,13 +1,30 @@
+import axios from "axios";
 import Head from "next/head";
 import React from "react";
 import { useContext } from "react";
+import { useEffect, useState } from "react";
+import {
+  ATOMIC_ASSETS_END_POINT,
+  IPFS_URL,
+  WAX_PINK_END_POINT,
+} from "../components/constants/constants";
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCardEnded from "../components/features/NftSection/components/NftCardEnded";
 import AppLayout from "../components/layout/AppLayout";
 import { NftContext } from "../context/NftContext";
+const nftCardDataArray = [];
 
-const Ended = () => {
-  const { nftCardData, isLoadingData, nftDataLoading } = useContext(NftContext);
+const Ended = (props) => {
+  const { isLoadingData, nftDataLoading } = useContext(NftContext);
+
+  const { nftCardDataObj } = props;
+
+  const [nftCardData, setNftCardData] = useState();
+
+  useEffect(() => {
+    setNftCardData(nftCardDataObj);
+  }, [nftCardDataObj]);
+
   return (
     <>
       {isLoadingData ? (
@@ -42,17 +59,14 @@ const Ended = () => {
                 ) : nftCardData !== undefined ? (
                   nftCardData.map((item, index) => {
                     return (
-                      <>
-                        <div key={index} className="grid-cols-4">
-                          <NftCardEnded
-                            key={index}
-                            nftSrc={item.nftImgUrl}
-                            winner={item.winner}
-                            campaignId={item.campaignId}
-                            assetId={item.assetId}
-                          />
-                        </div>
-                      </>
+                      <div key={index} className="grid-cols-4">
+                        <NftCardEnded
+                          nftSrc={item.nftImgUrl}
+                          winner={item.winner}
+                          campaignId={item.campaignId}
+                          assetId={item.assetId}
+                        />
+                      </div>
                     );
                   })
                 ) : (
@@ -68,3 +82,37 @@ const Ended = () => {
 };
 
 export default Ended;
+export async function getServerSideProps(context) {
+  const responseFromPost = await axios.post(
+    `${WAX_PINK_END_POINT}/v1/chain/get_table_rows`,
+    {
+      json: true,
+      code: "fortunebirds",
+      scope: "fortunebirds",
+      table: "results",
+      limit: "1000",
+    }
+  );
+
+  for (let i = 0; i < responseFromPost.data.rows?.length; i++) {
+    const endedCampaign = responseFromPost.data.rows[i];
+    const response = await axios.get(
+      `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${endedCampaign?.asset_id}`
+    );
+
+    const nftCardDataObjEnded = {
+      assetId: response.data?.data?.asset_id,
+      nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
+      campaignId: endedCampaign?.campaign_id,
+      winner: endedCampaign?.winner,
+    };
+
+    nftCardDataArray.push(nftCardDataObjEnded);
+  }
+
+  return {
+    props: {
+      nftCardDataObj: nftCardDataArray,
+    },
+  };
+}

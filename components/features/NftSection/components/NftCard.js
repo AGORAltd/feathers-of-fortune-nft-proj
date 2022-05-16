@@ -31,7 +31,6 @@ const NftCard = ({
     transactionId,
     setIsTransactionSussessful,
     userAccount,
-    setErroMsg,
   } = useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
@@ -98,6 +97,7 @@ const NftCard = ({
         title="Please Login to join the campaign"
         show={showNotLoggedInMsg}
         showConfirm={false}
+        onConfirm={() => {}}
       >
         <button
           className="py-3"
@@ -113,6 +113,7 @@ const NftCard = ({
         custom
         title=""
         show={showAlert}
+        onConfirm={() => {}}
         style={{ backgroundColor: "#1d2228", color: "white" }}
         customButtons={
           <>
@@ -176,12 +177,12 @@ const NftCard = ({
           show={showTransactionMessage}
           style={{ color: "white", backgroundColor: "#1d2228" }}
           title="Successfully Joined!"
+          onConfirm={() => {}}
           customButtons={
             <>
               <button
                 onClick={() => {
                   setIsTransactionSussessful(false);
-                  window.location.reload();
                 }}
                 style={{ backgroundColor: "#5f5dbb" }}
                 className=" px-6 py-3"
@@ -199,6 +200,7 @@ const NftCard = ({
           show={showErrorMessage}
           style={{ backgroundColor: "#1d2228", color: "white" }}
           title=""
+          onConfirm={() => {}}
           customButtons={
             <>
               <button
@@ -304,9 +306,12 @@ const NftCard = ({
             <p className="entrants_counter font-semibold py-2.5">Entrants</p>
 
             {joinedAccounts?.length > 0 ? (
-              joinedAccounts.map((item) => {
+              joinedAccounts.map((item, index) => {
                 return (
-                  <p className="py-2 my-2 hidden entrants_indicator rounded text-white">
+                  <p
+                    key={index}
+                    className="py-2 my-2 hidden entrants_indicator rounded text-white"
+                  >
                     {item}
                   </p>
                 );
@@ -380,6 +385,7 @@ const GetWinnerWhenExpired = ({
     <>
       <SweetAlert
         custom
+        onConfirm={() => {}}
         title=""
         show={openModal}
         style={{ backgroundColor: "#1d2228", color: "white" }}
