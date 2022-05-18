@@ -1,6 +1,4 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getDatabase } from "firebase/database";
 
 export function StartFirebase() {
@@ -15,7 +13,6 @@ export function StartFirebase() {
     measurementId: "G-SPTVMR2924",
   };
   const app = initializeApp(firebaseConfig);
-  // const analytics = getAnalytics(app);
-  
+
   return getDatabase(app);
 }

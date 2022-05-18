@@ -124,7 +124,8 @@ const NftCard = ({
                   campaignId,
                   entryCost,
                   assetId,
-                  joinedAccounts
+                  joinedAccounts,
+                  totalEntriesStart
                 ).then(() => {
                   setShowAlert(false);
                 });

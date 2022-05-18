@@ -217,7 +217,8 @@ export function NftContextProvider({ children }) {
     campaignId,
     entryCost,
     assetId,
-    joinedAccountsArr = []
+    joinedAccountsArr = [],
+    totalUsersEntered
   ) => {
     if (anchorWalletSession) {
       try {
@@ -245,8 +246,9 @@ export function NftContextProvider({ children }) {
         setIsTransactionSussessful(true);
         if (result?.transaction_id) {
           joinedAccountsArr.push(userAccount);
-          update(ref(firebaseDb, `/campaigns/${assetId}/runningCampaigns`), {
-            accounts: joinedAccountsArr,
+          update(ref(firebaseDb, `/campaigns/${assetId}/runningCampaign`), {
+            joinedAccounts: joinedAccountsArr,
+            totalEntriesStart: totalUsersEntered + 1,
           });
         }
       } catch (error) {
@@ -281,8 +283,9 @@ export function NftContextProvider({ children }) {
         setIsTransactionSussessful(true);
         if (result?.transaction_id) {
           joinedAccountsArr.push(userAccount);
-          update(ref(firebaseDb, `/campaigns/${assetId}/runningCampaigns`), {
-            accounts: joinedAccountsArr,
+          update(ref(firebaseDb, `/campaigns/${assetId}/runningCampaign`), {
+            joinedAccounts: joinedAccountsArr,
+            totalEntriesStart: totalUsersEntered + 1,
           });
         }
       } catch (error) {

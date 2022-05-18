@@ -17,62 +17,22 @@ import { onValue, ref, set } from "firebase/database";
 const New = () => {
   const { isLoadingData } = useContext(NftContext);
   const firebaseDb = StartFirebase();
-  const [nftCardData, setNftCardData] = useState([]);
-  const [nftCardDataWithoutDuplicates, setNftCardDataWithoutDuplicates] =
-    useState([]);
+  const [nftCardData, setNftCardData] = useState();
 
   useEffect(() => {
+    const singularCampaignArr = [];
     onValue(ref(firebaseDb), (snapshot) => {
       if (snapshot.exists()) {
         snapshot.child("campaigns").forEach((singularCampaign) => {
-          (async () => {
-            const singularCampaignObj = singularCampaign
-              .child("runningCampaigns")
-              .val();
+          const singularCampaignObj = singularCampaign
+            .child("runningCampaign")
+            .val();
 
-            const response = await axios.get(
-              `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${singularCampaignObj?.asset_ids[0]}`
-            );
-
-            setNftCardData((prevState) => [
-              ...prevState,
-              {
-                joinedAccounts: singularCampaignObj?.accounts || [],
-                assetId: response.data?.data?.asset_id,
-                contractAccount: singularCampaignObj?.contract_account,
-                nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
-                videoNftUrl: `${IPFS_URL}/${response?.data?.data?.template?.immutable_data?.video}`,
-                isVideo:
-                  `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
-                    ? false
-                    : `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
-                      `${IPFS_URL}/undefined`
-                    ? true
-                    : false,
-                campaignId: singularCampaignObj?.id,
-                creator: singularCampaignObj?.authorized_account,
-                entryCost: singularCampaignObj?.entrycost,
-                totalEntriesStart: singularCampaignObj?.accounts?.length || 0,
-                totalEntriesEnd: singularCampaignObj?.max_users,
-                loopTimeSeconds: singularCampaignObj?.loop_time_seconds,
-                lastRoll: singularCampaignObj?.last_roll,
-                totalEntriesEnd: singularCampaignObj?.max_users,
-              },
-            ]);
-          })();
+          singularCampaignArr.push(singularCampaignObj);
         });
       }
     });
-  }, []);
-
-  useEffect(() => {
-    setNftCardDataWithoutDuplicates(
-      nftCardData.filter((v, i) => {
-        return (
-          nftCardData.map((val) => val.campaignId).indexOf(v.campaignId) == i
-        );
-      })
-    );
+    setNftCardData(singularCampaignArr);
   }, [nftCardData]);
 
   return (
@@ -87,8 +47,8 @@ const New = () => {
             <div className="container my-20 mx-auto">
               <NftFilter />
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                {nftCardDataWithoutDuplicates.length > 0
-                  ? nftCardDataWithoutDuplicates.map((item, index) => {
+                {nftCardData?.length > 0
+                  ? nftCardData.map((item, index) => {
                       return (
                         <div key={index} className="grid-cols-4">
                           <NftCard
@@ -135,9 +95,36 @@ export async function getServerSideProps(context) {
     }
   );
 
-  onValue(ref(firebaseDb), (snapshot) => {
+  onValue(ref(firebaseDb), async (snapshot) => {
     for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
       const runningCampaigns = responseFromPost.data?.rows[i];
+
+      const response = await axios.get(
+        `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
+      );
+
+      const runningCampaign = {
+        joinedAccounts: runningCampaigns?.accounts || [],
+        assetId: response.data?.data?.asset_id,
+        contractAccount: runningCampaigns?.contract_account,
+        nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
+        videoNftUrl: `${IPFS_URL}/${response?.data?.data?.template?.immutable_data?.video}`,
+        isVideo:
+          `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
+            ? false
+            : `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
+              `${IPFS_URL}/undefined`
+            ? true
+            : false,
+        campaignId: runningCampaigns?.id,
+        creator: runningCampaigns?.authorized_account,
+        entryCost: runningCampaigns?.entrycost,
+        totalEntriesStart: runningCampaigns?.accounts?.length || 0,
+        totalEntriesEnd: runningCampaigns?.max_users,
+        loopTimeSeconds: runningCampaigns?.loop_time_seconds,
+        lastRoll: runningCampaigns?.last_roll,
+        totalEntriesEnd: runningCampaigns?.max_users,
+      };
 
       if (
         runningCampaigns?.asset_ids?.length > 0 &&
@@ -145,7 +132,7 @@ export async function getServerSideProps(context) {
           false
       ) {
         set(ref(firebaseDb, `/campaigns/${runningCampaigns?.asset_ids[0]}`), {
-          runningCampaigns,
+          runningCampaign,
         });
       }
     }
