@@ -82,7 +82,7 @@ const EndingSoon = (props) => {
 
 export default EndingSoon;
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const firebaseDb = StartFirebase();
 
   const responseFromPost = await axios.post(
@@ -141,5 +141,6 @@ export async function getServerSideProps() {
 
   return {
     props: {},
+    revalidate: 30,
   };
 }

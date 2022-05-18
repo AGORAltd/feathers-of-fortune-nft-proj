@@ -94,7 +94,7 @@ export default function Home() {
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const firebaseDb = StartFirebase();
 
   const responseFromPost = await axios.post(
@@ -153,6 +153,6 @@ export async function getServerSideProps() {
 
   return {
     props: {},
-    
+    revalidate: 30,
   };
 }

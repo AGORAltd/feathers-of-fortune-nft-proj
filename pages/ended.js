@@ -82,7 +82,7 @@ const Ended = (props) => {
 };
 
 export default Ended;
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const responseFromPost = await axios.post(
     `${WAX_PINK_END_POINT}/v1/chain/get_table_rows`,
     {
@@ -114,5 +114,6 @@ export async function getServerSideProps() {
     props: {
       nftCardDataObj: nftCardDataArray,
     },
+    revalidate: 30,
   };
 }
