@@ -82,7 +82,7 @@ const Ended = (props) => {
 };
 
 export default Ended;
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
   const responseFromPost = await axios.post(
     `${WAX_PINK_END_POINT}/v1/chain/get_table_rows`,
     {

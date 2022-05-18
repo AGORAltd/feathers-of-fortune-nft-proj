@@ -82,7 +82,7 @@ const EndingSoon = (props) => {
 
 export default EndingSoon;
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
   const firebaseDb = StartFirebase();
 
   const responseFromPost = await axios.post(

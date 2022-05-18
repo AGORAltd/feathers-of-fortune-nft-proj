@@ -81,7 +81,7 @@ const New = () => {
 
 export default New;
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
   const firebaseDb = StartFirebase();
 
   const responseFromPost = await axios.post(
