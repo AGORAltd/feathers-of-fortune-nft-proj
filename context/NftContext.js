@@ -240,11 +240,9 @@ export function NftContextProvider({ children }) {
           },
           { blocksBehind: 4, expireSeconds: 120 }
         );
-
         const transactionIdFromSuccess = await result?.transaction_id;
-        setTransactionId(transactionIdFromSuccess);
         setIsTransactionSussessful(true);
-        if (result?.transaction_id) {
+        if (result.transaction.id) {
           joinedAccountsArr.push(userAccount);
           update(ref(firebaseDb, `/campaigns/${assetId}/runningCampaign`), {
             joinedAccounts: joinedAccountsArr,
