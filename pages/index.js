@@ -109,50 +109,54 @@ export async function getStaticProps() {
   );
 
   onValue(ref(firebaseDb), async (snapshot) => {
-    for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
-      const runningCampaigns = responseFromPost.data?.rows[i];
+    try {
+      for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
+        const runningCampaigns = responseFromPost.data?.rows[i];
+        if (
+          runningCampaigns?.asset_ids?.length > 0 &&
+          snapshot
+            .child("campaigns")
+            .hasChild(runningCampaigns?.asset_ids[0]) == false
+        ) {
+          const response = await axios.get(
+            `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
+          );
 
-      const response = await axios.get(
-        `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
-      );
+          const runningCampaign = {
+            joinedAccounts: runningCampaigns?.accounts || [],
+            assetId: response.data?.data?.asset_id,
+            contractAccount: runningCampaigns?.contract_account,
+            nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
+            videoNftUrl: `${IPFS_URL}/${response?.data?.data?.template?.immutable_data?.video}`,
+            isVideo:
+              `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
+                ? false
+                : `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
+                  `${IPFS_URL}/undefined`
+                ? true
+                : false,
+            campaignId: runningCampaigns?.id,
+            creator: runningCampaigns?.authorized_account,
+            entryCost: runningCampaigns?.entrycost,
+            totalEntriesStart: runningCampaigns?.accounts?.length || 0,
+            totalEntriesEnd: runningCampaigns?.max_users,
+            loopTimeSeconds: runningCampaigns?.loop_time_seconds,
+            lastRoll: runningCampaigns?.last_roll,
+            totalEntriesEnd: runningCampaigns?.max_users,
+          };
 
-      const runningCampaign = {
-        joinedAccounts: runningCampaigns?.accounts || [],
-        assetId: response.data?.data?.asset_id,
-        contractAccount: runningCampaigns?.contract_account,
-        nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
-        videoNftUrl: `${IPFS_URL}/${response?.data?.data?.template?.immutable_data?.video}`,
-        isVideo:
-          `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
-            ? false
-            : `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
-              `${IPFS_URL}/undefined`
-            ? true
-            : false,
-        campaignId: runningCampaigns?.id,
-        creator: runningCampaigns?.authorized_account,
-        entryCost: runningCampaigns?.entrycost,
-        totalEntriesStart: runningCampaigns?.accounts?.length || 0,
-        totalEntriesEnd: runningCampaigns?.max_users,
-        loopTimeSeconds: runningCampaigns?.loop_time_seconds,
-        lastRoll: runningCampaigns?.last_roll,
-        totalEntriesEnd: runningCampaigns?.max_users,
-      };
-
-      if (
-        runningCampaigns?.asset_ids?.length > 0 &&
-        snapshot.child("campaigns").hasChild(runningCampaigns?.asset_ids[0]) ==
-          false
-      ) {
-        set(ref(firebaseDb, `/campaigns/${runningCampaigns?.asset_ids[0]}`), {
-          runningCampaign,
-        });
+          set(ref(firebaseDb, `/campaigns/${runningCampaigns?.asset_ids[0]}`), {
+            runningCampaign,
+          });
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   });
 
   return {
     props: {},
-    revalidate: 30,
+    revalidate: 10,
   };
 }
