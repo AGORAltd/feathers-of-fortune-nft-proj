@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 const EndingSoon = (props) => {
   const firebaseDb = StartFirebase();
   const { isLoadingData } = useContext(NftContext);
-
+  const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
   const [nftCardData, setNftCardData] = useState([]);
 
   useEffect(() => {
@@ -33,6 +33,18 @@ const EndingSoon = (props) => {
         });
       }
     });
+
+    singularCampaignArr.sort((a, b) => {
+      return (
+        Date.parse(`${a.lastRoll}Z`) +
+        a.loopTimeSeconds * 1000 -
+        nowUTCEpochTimeInMilliSec -
+        (Date.parse(`${b.lastRoll}Z`) +
+          b.loopTimeSeconds * 1000 -
+          nowUTCEpochTimeInMilliSec)
+      );
+    });
+
     setNftCardData(singularCampaignArr);
   }, [nftCardData]);
 

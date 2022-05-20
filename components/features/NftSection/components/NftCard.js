@@ -58,11 +58,12 @@ const NftCard = ({
   }, [transactionId]);
 
   useEffect(() => {
-    if (totalEntriesEnd == totalEntriesStart) {
+    if (totalEntriesEnd != totalEntriesStart) {
+      updateTimeToShow(finalUTCEpochTimeInMilliSec);
+    } else {
       setTimeToShow("Reveal Winner");
     }
-    updateTimeToShow(finalUTCEpochTimeInMilliSec);
-  }, [timeToShow]);
+  }, [timeToShow, totalEntriesEnd, totalEntriesStart]);
 
   const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
     let interval = setInterval(() => {
