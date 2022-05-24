@@ -1,11 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: { domains: ["ipfs.atomichub.io"] },
-  exportPathMap: async function (
-    defaultPathMap,
-    { dev, dir, outDir, distDir, buildId }
-  ) {
+  images: { loader: "imgix", path: "", domains: ["ipfs.atomichub.io"] },
+  exportPathMap: async function (defaultPathMap) {
     return {
       "/": { page: "/" },
       "/ended": { page: "/ended" },

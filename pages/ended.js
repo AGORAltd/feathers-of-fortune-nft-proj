@@ -59,14 +59,18 @@ const Ended = (props) => {
                 ) : nftCardData !== undefined ? (
                   nftCardData.map((item, index) => {
                     return (
-                      <div key={index} className="grid-cols-4">
-                        <NftCardEnded
-                          nftSrc={item.nftImgUrl}
-                          winner={item.winner}
-                          campaignId={item.campaignId}
-                          assetId={item.assetId}
-                        />
-                      </div>
+                      <>
+                        {item.nftImgUrl.search("undefined") > -1 == false && (
+                          <div className="grid-cols-4">
+                            <NftCardEnded
+                              nftSrc={item.nftImgUrl}
+                              winner={item.winner}
+                              campaignId={item.campaignId}
+                              assetId={item.assetId}
+                            />
+                          </div>
+                        )}
+                      </>
                     );
                   })
                 ) : (
@@ -90,24 +94,27 @@ export async function getStaticProps() {
       code: "fortunebirds",
       scope: "fortunebirds",
       table: "results",
-      limit: "1000",
+      limit: 14,
     }
   );
 
   for (let i = 0; i < responseFromPost.data.rows?.length; i++) {
     const endedCampaign = responseFromPost.data.rows[i];
-    const response = await axios.get(
-      `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${endedCampaign?.asset_id}`
-    );
 
-    const nftCardDataObjEnded = {
-      assetId: response.data?.data?.asset_id,
-      nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
-      campaignId: endedCampaign?.campaign_id,
-      winner: endedCampaign?.winner,
-    };
+    if (endedCampaign?.asset_id?.length > 0) {
+      const response = await axios.get(
+        `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${endedCampaign?.asset_id}`
+      );
 
-    nftCardDataArray.push(nftCardDataObjEnded);
+      const nftCardDataObjEnded = {
+        assetId: response.data?.data?.asset_id,
+        nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
+        campaignId: endedCampaign?.campaign_id,
+        winner: endedCampaign?.winner,
+      };
+
+      nftCardDataArray.push(nftCardDataObjEnded);
+    }
   }
 
   return {
