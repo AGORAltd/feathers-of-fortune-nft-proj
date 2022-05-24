@@ -166,7 +166,7 @@ export function NftContextProvider({ children }) {
               },
             ],
           },
-          { blocksBehind: 3, expireSeconds: 30 }
+          { blocksBehind: 3, expireSeconds: 60 }
         );
 
         setTransactionIdFromCreation(
@@ -197,7 +197,7 @@ export function NftContextProvider({ children }) {
               },
             ],
           },
-          { blocksBehind: 3, expireSeconds: 30 }
+          { blocksBehind: 3, expireSeconds: 60 }
         );
 
         setTransactionIdFromCreation(
@@ -238,7 +238,7 @@ export function NftContextProvider({ children }) {
               },
             ],
           },
-          { blocksBehind: 4, expireSeconds: 120 }
+          { blocksBehind: 4, expireSeconds: 620 }
         );
         const transactionIdFromSuccess = await result?.transaction_id;
         setIsTransactionSussessful(true);
@@ -273,7 +273,7 @@ export function NftContextProvider({ children }) {
               },
             ],
           },
-          { blocksBehind: 4, expireSeconds: 120 }
+          { blocksBehind: 4, expireSeconds: 620 }
         );
 
         const transactionIdFromSuccess = await result?.transaction_id;
