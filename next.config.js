@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: { loader: "akamai", path: "", domains: ["ipfs.atomichub.io"] },
+  images: { loader: "akamai", path: "", domains: ["*"] },
   exportPathMap: async function (defaultPathMap) {
     return {
       "/": { page: "/" },
