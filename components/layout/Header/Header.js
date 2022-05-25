@@ -13,8 +13,21 @@ const Header = () => {
 
   const logoutFromApp = () => {
     anchorLink.clearSessions("PIXELCAMPAIGN");
-    window.location.href = "https://all-access.wax.io/logout";
+
+    const logout = window.open(
+      "https://all-access.wax.io/logout",
+      "_blank",
+      "toolbar=0,location=0,menubar=0"
+    );
+
+    logout.resizeTo(0, 0);
+
+    setTimeout(() => {
+      logout.close();
+      window.location.reload();
+    }, 4500);
   };
+
   return (
     <>
       <SweetAlert

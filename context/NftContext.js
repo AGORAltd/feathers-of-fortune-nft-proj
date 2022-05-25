@@ -113,7 +113,7 @@ export function NftContextProvider({ children }) {
 
   const waxUserLogIn = async () => {
     try {
-      const userAccountFromLogin = await wax.login();
+      let userAccountFromLogin = await wax.login();
       setUserAccount(userAccountFromLogin);
       getAuthUsers();
     } catch (err) {
