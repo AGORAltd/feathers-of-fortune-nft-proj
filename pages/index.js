@@ -94,7 +94,7 @@ export default function Home() {
   );
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const firebaseDb = StartFirebase();
 
   const responseFromPost = await axios.post(
