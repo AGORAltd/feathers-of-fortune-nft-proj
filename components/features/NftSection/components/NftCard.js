@@ -151,11 +151,13 @@ const NftCard = ({
       >
         {!isVideo ? (
           <>
-            <img
+            <Image
+              height={110}
               width={"100%"}
               loading="lazy"
               src={nftSrc}
-              style={{ objectFit: "cover" }}
+              objectFit={"fill"}
+              layout={"responsive"}
             />
           </>
         ) : (
@@ -235,11 +237,13 @@ const NftCard = ({
         >
           {!isVideo ? (
             <>
-              <img
+              <Image
+                height={110}
                 width={"100%"}
                 loading="lazy"
                 src={nftSrc}
-                style={{ objectFit: "fill", height: "350px" }}
+                objectFit={"fill"}
+                layout={"responsive"}
               />
             </>
           ) : (

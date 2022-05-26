@@ -16,12 +16,14 @@ const NftCardEnded = ({ nftSrc, campaignId, winner, assetId }) => {
           target="_blank"
           rel="noreferrer"
         >
-          <img
+          <Image
             className="ended_overly"
+            height={100}
             width={"100%"}
             loading="lazy"
             src={nftSrc}
-            style={{ objectFit: "fill", height: "300px" }}
+            objectFit={"fill"}
+            layout={"responsive"}
           />
         </a>
         <div className="nft_card_content_container text-center">
