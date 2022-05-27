@@ -67,9 +67,7 @@ export default function Home() {
                       return (
                         <div key={index} className="grid-cols-4">
                           <NftCard
-                            nftSrc={
-                              "https://ipfs.atomichub.io/ipfs/QmPePLVsgFBefqo5xjph38CKBb6nLujg1VTT1vUXQyKvdj"
-                            }
+                            nftSrc={item.nftImgUrl}
                             campaignId={item.campaignId}
                             creator={item.creator}
                             loopTimeSeconds={item.loopTimeSeconds}
