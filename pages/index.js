@@ -11,12 +11,12 @@ import {
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/components/NftCard";
 import AppLayout from "../components/layout/AppLayout";
+import { adminDb } from "../context/firebase-admin";
 import { StartFirebase } from "../context/firebase-config";
 import { NftContext } from "../context/NftContext";
 
 export default function Home() {
   const { isLoadingData } = useContext(NftContext);
-
   const firebaseDb = StartFirebase();
   const [nftCardData, setNftCardData] = useState();
 
@@ -108,7 +108,7 @@ export async function getStaticProps() {
     }
   );
 
-  onValue(ref(firebaseDb), async (snapshot) => {
+  onValue(ref(adminDb), async (snapshot) => {
     try {
       for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
         const runningCampaigns = responseFromPost.data?.rows[i];
