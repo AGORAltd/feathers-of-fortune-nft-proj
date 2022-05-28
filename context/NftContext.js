@@ -2,6 +2,7 @@ import axios from "axios";
 
 import { useState, createContext, useEffect } from "react";
 import {
+  ATOMIC_ASSETS_END_POINT,
   RPC_ENDPOINT,
   WAX_PINK_END_POINT,
 } from "../components/constants/constants";
@@ -20,7 +21,6 @@ const wax = new waxjs.WaxJS({
 
 export function NftContextProvider({ children }) {
   const firebaseDb = StartFirebase();
-  const { pathname } = useRouter();
   const [userAccount, setUserAccount] = useState();
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [showPagination, setShowPagination] = useState(false);
