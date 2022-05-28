@@ -12,6 +12,7 @@
     "@waxio/waxjs": "^1.0.4",
     "anchor-link": "^3.4.0",
     "anchor-link-browser-transport": "^3.3.0",
+    "atomicmarket": "^1.1.6",
     "axios": "^0.26.1",
     "eslint-plugin-react": "^7.29.0",
     "firebase": "^9.7.0",

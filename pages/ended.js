@@ -121,6 +121,6 @@ export async function getStaticProps() {
     props: {
       nftCardDataObj: nftCardDataArray,
     },
-    revalidate: 10,
+    // revalidate: 10,
   };
 }

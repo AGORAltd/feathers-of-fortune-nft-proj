@@ -108,7 +108,7 @@ export async function getStaticProps() {
     }
   );
 
-  onValue(ref(adminDb), async (snapshot) => {
+  onValue(ref(firebaseDb), async (snapshot) => {
     try {
       for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
         const runningCampaigns = responseFromPost.data?.rows[i];
