@@ -11,7 +11,7 @@ import {
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/components/NftCard";
 import AppLayout from "../components/layout/AppLayout";
-import { adminDb } from "../context/firebase-admin";
+import { startFirebaseAdmin } from "../context/firebase-admin";
 import { StartFirebase } from "../context/firebase-config";
 import { NftContext } from "../context/NftContext";
 
@@ -96,6 +96,7 @@ export default function Home() {
 
 export async function getStaticProps() {
   const firebaseDb = StartFirebase();
+  const adminDb = startFirebaseAdmin();
 
   const responseFromPost = await axios.post(
     `${WAX_PINK_END_POINT}/v1/chain/get_table_rows`,
@@ -108,52 +109,56 @@ export async function getStaticProps() {
     }
   );
 
-  onValue(ref(adminDb), async (snapshot) => {
-    try {
-      for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
-        const runningCampaigns = responseFromPost.data?.rows[i];
-        if (
-          runningCampaigns?.asset_ids?.length > 0 &&
-          snapshot
-            .child("campaigns")
-            .hasChild(runningCampaigns?.asset_ids[0]) == false
-        ) {
-          const response = await axios.get(
-            `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
-          );
+  onValue(
+    ref(adminDb),
+    async (snapshot) => {
+      try {
+        for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
+          const runningCampaigns = responseFromPost.data?.rows[i];
+          if (
+            runningCampaigns?.asset_ids?.length > 0 &&
+            snapshot
+              .child("campaigns")
+              .hasChild(runningCampaigns?.asset_ids[0]) == false
+          ) {
+            const response = await axios.get(
+              `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
+            );
 
-          const runningCampaign = {
-            joinedAccounts: runningCampaigns?.accounts || [],
-            assetId: response.data?.data?.asset_id,
-            contractAccount: runningCampaigns?.contract_account,
-            nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
-            videoNftUrl: `${IPFS_URL}/${response?.data?.data?.template?.immutable_data?.video}`,
-            isVideo:
-              `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
-                ? false
-                : `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
-                  `${IPFS_URL}/undefined`
-                ? true
-                : false,
-            campaignId: runningCampaigns?.id,
-            creator: runningCampaigns?.authorized_account,
-            entryCost: runningCampaigns?.entrycost,
-            totalEntriesStart: runningCampaigns?.accounts?.length || 0,
-            totalEntriesEnd: runningCampaigns?.max_users,
-            loopTimeSeconds: runningCampaigns?.loop_time_seconds,
-            lastRoll: runningCampaigns?.last_roll,
-            totalEntriesEnd: runningCampaigns?.max_users,
-          };
+            const runningCampaign = {
+              joinedAccounts: runningCampaigns?.accounts || [],
+              assetId: response.data?.data?.asset_id,
+              contractAccount: runningCampaigns?.contract_account,
+              nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
+              videoNftUrl: `${IPFS_URL}/${response?.data?.data?.template?.immutable_data?.video}`,
+              isVideo:
+                `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
+                  ? false
+                  : `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
+                    `${IPFS_URL}/undefined`
+                  ? true
+                  : false,
+              campaignId: runningCampaigns?.id,
+              creator: runningCampaigns?.authorized_account,
+              entryCost: runningCampaigns?.entrycost,
+              totalEntriesStart: runningCampaigns?.accounts?.length || 0,
+              totalEntriesEnd: runningCampaigns?.max_users,
+              loopTimeSeconds: runningCampaigns?.loop_time_seconds,
+              lastRoll: runningCampaigns?.last_roll,
+              totalEntriesEnd: runningCampaigns?.max_users,
+            };
 
-          set(ref(firebaseDb, `/campaigns/${runningCampaigns?.asset_ids[0]}`), {
-            runningCampaign,
-          });
+            set(ref(adminDb, `/campaigns/${runningCampaigns?.asset_ids[0]}`), {
+              runningCampaign,
+            });
+          }
         }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  });
+    },
+    { onlyOnce: true }
+  );
 
   return {
     props: {},
