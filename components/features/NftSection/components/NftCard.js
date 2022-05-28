@@ -252,9 +252,12 @@ const NftCard = ({
                 height="326px"
                 width={"100%"}
                 className="video_nft object-cover"
-                controls
+                autoPlay
+                muted
+                controls=""
               >
                 <source src={`${videoNftUrl}`} type="video/mp4" />
+                <source src={`${videoNftUrl}`} type="video/ogg" />
               </video>
             </div>
           )}

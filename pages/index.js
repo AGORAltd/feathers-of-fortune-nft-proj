@@ -11,7 +11,6 @@ import {
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/components/NftCard";
 import AppLayout from "../components/layout/AppLayout";
-import { adminDb } from "../context/firebase-admin";
 import { StartFirebase } from "../context/firebase-config";
 import { NftContext } from "../context/NftContext";
 

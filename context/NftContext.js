@@ -14,31 +14,13 @@ import AnchorLinkBrowserTransport from "anchor-link-browser-transport";
 export const NftContext = createContext();
 import { ref, update } from "firebase/database";
 
-import { AtomicMarketApi } from "atomicmarket";
-
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
   tryAutoLogin: false,
 });
 
 export function NftContextProvider({ children }) {
-  // const atomicAssetsApi = new AtomicMarketApi(
-  //   ATOMIC_ASSETS_END_POINT,
-  //   "atomicmarket",
-  //   {
-  //     fetch,
-  //   }
-  // );
-
-  // const getAssets = async () => {
-  //   const assests = await atomicAssetsApi.getAsset("1099538693889");
-  //   console.log(assests);
-  // };
-
-  // getAssets();
-
   const firebaseDb = StartFirebase();
-  const { pathname } = useRouter();
   const [userAccount, setUserAccount] = useState();
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [showPagination, setShowPagination] = useState(false);

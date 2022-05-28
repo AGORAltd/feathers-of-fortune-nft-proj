@@ -13,7 +13,6 @@ import { StartFirebase } from "../context/firebase-config";
 import { NftContext } from "../context/NftContext";
 import { onValue, ref, set } from "firebase/database";
 import { useEffect, useState } from "react";
-import { adminDb } from "../context/firebase-admin";
 
 const EndingSoon = () => {
   const firebaseDb = StartFirebase();
@@ -109,7 +108,7 @@ export async function getStaticProps() {
     }
   );
 
-  onValue(ref(adminDb), async (snapshot) => {
+  onValue(ref(firebaseDb), async (snapshot) => {
     try {
       for (let i = 0; i < responseFromPost?.data?.rows?.length; i++) {
         const runningCampaigns = responseFromPost.data?.rows[i];
