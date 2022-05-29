@@ -383,7 +383,7 @@ const GetWinnerWhenExpired = ({
 
       setCurrentWinnerUser(() => currentWinner?.winner);
     };
-  }, [currentWinnerUser]);
+  }, []);
 
   useEffect(() => {
     randomImageSelector(imgSrc);
