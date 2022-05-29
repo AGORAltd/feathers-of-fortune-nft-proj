@@ -30,7 +30,14 @@ const EndingSoon = () => {
             .child("runningCampaign")
             .val();
 
-          singularCampaignArr.push(singularCampaignObj);
+          if (
+            Date.parse(`${singularCampaignObj.lastRoll}Z`) +
+              singularCampaignObj.loopTimeSeconds * 1000 -
+              nowUTCEpochTimeInMilliSec >
+            0
+          ) {
+            singularCampaignArr.push(singularCampaignObj);
+          }
         });
       }
     });
