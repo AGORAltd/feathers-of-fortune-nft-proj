@@ -363,27 +363,29 @@ const GetWinnerWhenExpired = ({
   const [imgSrcFinal, setImgSrcFinal] = useState("");
 
   useEffect(() => {
-    return async () => {
-      const response = await axios.post(
-        `${WAX_PINK_END_POINT}/v1/chain/get_table_rows`,
-        {
-          json: true,
-          code: "fortunebirds",
-          scope: "fortunebirds",
-          table: "results",
-          limit: 1000,
-        }
-      );
-
-      let campaignDataOnExpire = await response.data?.rows;
-
-      const currentWinner = await campaignDataOnExpire?.find((item) => {
-        return item?.asset_id == assetIdToFindWith;
-      });
-
-      setCurrentWinnerUser(() => currentWinner?.winner);
-    };
+    getWinnerUser();
   }, []);
+
+  const getWinnerUser = async () => {
+    const response = await axios.post(
+      `${WAX_PINK_END_POINT}/v1/chain/get_table_rows`,
+      {
+        json: true,
+        code: "fortunebirds",
+        scope: "fortunebirds",
+        table: "results",
+        limit: 1000,
+      }
+    );
+
+    let campaignDataOnExpire = await response.data?.rows;
+
+    const currentWinner = campaignDataOnExpire?.find((item) => {
+      return item?.asset_id == assetIdToFindWith;
+    });
+
+    setCurrentWinnerUser(() => currentWinner?.winner);
+  };
 
   useEffect(() => {
     randomImageSelector(imgSrc);
