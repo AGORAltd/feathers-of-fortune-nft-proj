@@ -377,14 +377,11 @@ const GetWinnerWhenExpired = ({
 
       let campaignDataOnExpire = await response.data?.rows;
 
-      const currentWinner = campaignDataOnExpire
-        ?.find((item) => {
-          return item?.asset_id == assetIdToFindWith;
-        })
-        .then(() => {
-          setCurrentWinnerUser(() => currentWinner?.winner);
-          console.log(currentWinnerUser);
-        });
+      const currentWinner = await campaignDataOnExpire?.find((item) => {
+        return item?.asset_id == assetIdToFindWith;
+      });
+
+      setCurrentWinnerUser(() => currentWinner?.winner);
     };
   }, [currentWinnerUser]);
 
