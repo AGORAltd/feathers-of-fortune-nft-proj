@@ -1,17 +1,18 @@
 import { getDatabase } from "firebase/database";
 import admin from "firebase-admin";
-import credential from "../secure.json";
+import serviceAccount from "../secure.json";
+import { initializeApp } from "firebase/app";
 
 export function startFirebaseAdmin() {
   let adminApp;
+  const configs = {
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://feathers-c926c-default-rtdb.firebaseio.com",
+  };
   if (!admin.apps.length) {
     try {
-      adminApp = admin.initializeApp({
-        credential: admin.credential.cert(credential),
-      });
-    } catch (error) {
-      console.log("Firebase admin initialization error", error.stack);
-    }
+      adminApp = initializeApp(configs, "adminDbApp");
+    } catch (error) {}
   }
 
   return getDatabase(adminApp);
