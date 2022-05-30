@@ -339,6 +339,7 @@ const NftCard = ({
       </div>
       {showWinner && (
         <GetWinnerWhenExpired
+          campaignIdToFindWith={campaignId}
           assetIdToFindWith={assetId}
           openModal={openModal}
           timeCountDown={timeCountDown}
@@ -355,6 +356,7 @@ export default NftCard;
 
 const GetWinnerWhenExpired = ({
   assetIdToFindWith = "",
+  campaignIdToFindWith = "",
   openModal = true,
   timeCountDown,
   handleClose,
@@ -380,11 +382,14 @@ const GetWinnerWhenExpired = ({
 
     let campaignDataOnExpire = await response.data?.rows;
 
-    const currentWinner = campaignDataOnExpire?.find((item) => {
-      return item?.asset_id == assetIdToFindWith;
+    const currentWinner = campaignDataOnExpire?.filter((item) => {
+      return (
+        item?.asset_id == assetIdToFindWith &&
+        item?.campaign_id == campaignIdToFindWith
+      );
     });
 
-    setCurrentWinnerUser(() => currentWinner?.winner);
+    setCurrentWinnerUser(() => currentWinner[0]?.winner);
   };
 
   useEffect(() => {

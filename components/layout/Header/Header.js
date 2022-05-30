@@ -3,6 +3,7 @@ import { useContext } from "react";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { useState } from "react";
 import { NftContext } from "../../../context/NftContext";
+import axios from "axios";
 
 const Header = () => {
   const { userAccountLogin, userAccount, setUserLoginProvider, anchorLink } =
@@ -17,10 +18,10 @@ const Header = () => {
     const logout = window.open(
       "https://all-access.wax.io/logout",
       "_blank",
-      "toolbar=0,location=0,menubar=0"
+      "toolbar=0,location=0"
     );
 
-    logout.resizeTo(0, 0);
+    logout.resizeTo(2, 2);
 
     setTimeout(() => {
       logout.close();

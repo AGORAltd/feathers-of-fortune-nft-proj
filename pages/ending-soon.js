@@ -34,7 +34,9 @@ const EndingSoon = () => {
             Date.parse(`${singularCampaignObj.lastRoll}Z`) +
               singularCampaignObj.loopTimeSeconds * 1000 -
               nowUTCEpochTimeInMilliSec >
-            0
+              0 &&
+            singularCampaignObj.totalEntriesStart !=
+              singularCampaignObj.totalEntriesEnd
           ) {
             singularCampaignArr.push(singularCampaignObj);
           }
