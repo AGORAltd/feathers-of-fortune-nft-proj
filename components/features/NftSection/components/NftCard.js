@@ -313,7 +313,7 @@ const NftCard = ({
                 : "join_campaign_now_btn"
             }`}
           >
-            JOIN NOW
+            {timeToShow == "Reveal Winner" ? "ENDED" : "JOIN NOW"}
           </button>
           <div className="entrants_container cursor-pointer">
             <p className="entrants_counter font-semibold py-2.5">Entrants</p>

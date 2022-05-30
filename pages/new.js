@@ -19,6 +19,7 @@ const New = () => {
   const { isLoadingData } = useContext(NftContext);
   const firebaseDb = StartFirebase();
   const [nftCardData, setNftCardData] = useState();
+  const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime(); 
 
   useEffect(() => {
     const singularCampaignArr = [];
@@ -28,8 +29,16 @@ const New = () => {
           const singularCampaignObj = singularCampaign
             .child("runningCampaign")
             .val();
-
-          singularCampaignArr.push(singularCampaignObj);
+          if (
+            Date.parse(`${singularCampaignObj.lastRoll}Z`) +
+              singularCampaignObj.loopTimeSeconds * 1000 -
+              nowUTCEpochTimeInMilliSec >
+              0 &&
+            singularCampaignObj.totalEntriesStart !=
+              singularCampaignObj.totalEntriesEnd
+          ) {
+            singularCampaignArr.push(singularCampaignObj);
+          }
         });
       }
     });
