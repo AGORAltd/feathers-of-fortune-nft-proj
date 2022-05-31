@@ -18,10 +18,14 @@ import { NftContext } from "../context/NftContext";
 export default function Home() {
   const { isLoadingData } = useContext(NftContext);
   const firebaseDb = StartFirebase();
+  const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
+
   const [nftCardData, setNftCardData] = useState();
+  const [nftCardDataEnded, setNftCardDataEnded] = useState();
 
   useEffect(() => {
     const singularCampaignArr = [];
+    const endedCampaignArr = [];
     onValue(ref(firebaseDb), (snapshot) => {
       if (snapshot.exists()) {
         snapshot.child("campaigns").forEach((singularCampaign) => {
@@ -29,11 +33,28 @@ export default function Home() {
             .child("runningCampaign")
             .val();
 
-          singularCampaignArr.push(singularCampaignObj);
+          if (
+            Date.parse(`${singularCampaignObj.lastRoll}Z`) +
+              singularCampaignObj.loopTimeSeconds * 1000 -
+              nowUTCEpochTimeInMilliSec >
+              0 &&
+            singularCampaignObj.totalEntriesStart !=
+              singularCampaignObj.totalEntriesEnd
+          ) {
+            singularCampaignArr.push(singularCampaignObj);
+          } else {
+            endedCampaignArr.push(singularCampaignObj);
+          }
         });
       }
     });
+
+    singularCampaignArr.sort((a, b) => {
+      return b.totalEntriesStart - a.totalEntriesStart;
+    });
+
     setNftCardData(singularCampaignArr);
+    setNftCardDataEnded(endedCampaignArr);
   }, [nftCardData]);
 
   return (
@@ -64,6 +85,30 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 {nftCardData?.length > 0
                   ? nftCardData.map((item, index) => {
+                      return (
+                        <div key={index} className="grid-cols-4">
+                          <NftCard
+                            nftSrc={item.nftImgUrl}
+                            campaignId={item.campaignId}
+                            creator={item.creator}
+                            loopTimeSeconds={item.loopTimeSeconds}
+                            totalEntriesStart={item.totalEntriesStart}
+                            totalEntriesEnd={item.totalEntriesEnd}
+                            entryCost={item.entryCost}
+                            contractAccount={item.contractAccount}
+                            lastRoll={item.lastRoll}
+                            isVideo={item.isVideo}
+                            videoNftUrl={item.videoNftUrl}
+                            assetId={item.assetId}
+                            joinedAccounts={item.joinedAccounts}
+                          />
+                        </div>
+                      );
+                    })
+                  : ""}
+
+                {nftCardDataEnded?.length > 0
+                  ? nftCardDataEnded.map((item, index) => {
                       return (
                         <div key={index} className="grid-cols-4">
                           <NftCard
