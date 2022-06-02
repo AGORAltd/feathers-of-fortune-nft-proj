@@ -44,35 +44,8 @@ const NftFilter = () => {
           >
             Ending Soon
           </button>
-          <button
-            onClick={() => {
-              sendToRouteOnClick("ended");
-            }}
-            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
-          >
-            Ended
-          </button>
 
           <CreateCampaignBtn />
-        </div>
-
-        <div className="mx-auto md:mx-2">
-          {pathname != "/ended" && (
-            <select className="filter_button py-2 px-6 rounded mx-2">
-              <option>Price</option>
-              <option value="Lowest">Lowest</option>
-              <option value="Highest">Highest</option>
-            </select>
-          )}
-
-          <select className="filter_button py-2 px-6 rounded mx-2">
-            <option>Token</option>
-            <option value="token1">TOK1</option>
-            <option value="token2">TOK2</option>
-            <option value="token3">TOK3</option>
-            <option value="token4">TOK4</option>
-            <option value="token5">TOK5</option>
-          </select>
         </div>
       </div>
     </>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { useState, createContext, useEffect } from "react";
 import {
@@ -70,6 +71,16 @@ export function NftContextProvider({ children }) {
         setAnchorWalletSession(wallet_session);
         setUserLoginProvider("wax");
       }
+
+      const functions = getFunctions();
+      const addCampaign = httpsCallable(functions, "addNewCampaign");
+      addCampaign()
+        .then(() => {
+          console.log("Success");
+        })
+        .catch(() => {
+          console.log("Error");
+        });
     };
   }
 
