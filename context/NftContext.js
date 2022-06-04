@@ -45,8 +45,6 @@ export function NftContextProvider({ children }) {
     chains: [{ chainId: chainId, nodeUrl: `https://${nodeUrl}` }],
   });
 
-  useCallback(addCampaign(), []);
-
   if (typeof window != "undefined") {
     window.onload = async () => {
       let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
@@ -138,6 +136,8 @@ export function NftContextProvider({ children }) {
       console.log(error);
     }
   };
+
+  useCallback(addCampaign(), []);
 
   useEffect(() => {
     checkIfAuthorizeduser();
