@@ -1,9 +1,7 @@
 import axios from "axios";
-import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { useState, createContext, useEffect } from "react";
 import {
-  ATOMIC_ASSETS_END_POINT,
   RPC_ENDPOINT,
   WAX_PINK_END_POINT,
 } from "../components/constants/constants";
@@ -13,7 +11,7 @@ import { StartFirebase } from "./firebase-config";
 import AnchorLink from "anchor-link";
 import AnchorLinkBrowserTransport from "anchor-link-browser-transport";
 export const NftContext = createContext();
-import { ref, update } from "firebase/database";
+import { getDatabase, child, get, ref, update, set } from "firebase/database";
 
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
@@ -23,10 +21,6 @@ const wax = new waxjs.WaxJS({
 export function NftContextProvider({ children }) {
   const firebaseDb = StartFirebase();
   const [userAccount, setUserAccount] = useState();
-  const [isLoadingData, setIsLoadingData] = useState(false);
-  const [showPagination, setShowPagination] = useState(false);
-  const [startIndex, setStartIndex] = useState(0);
-  const [endIndex, setEndIndex] = useState(8);
   const [authUserData, setAuthUserData] = useState();
   const [isAuthorizedUser, setIsAuthorizedUser] = useState(false);
   const [isCampaignCreateationSussessful, setIsCampaignCreateationSussessful] =
@@ -52,8 +46,6 @@ export function NftContextProvider({ children }) {
     chains: [{ chainId: chainId, nodeUrl: `https://${nodeUrl}` }],
   });
 
-  // below function is checking if auto login is available.
-
   if (typeof window != "undefined") {
     window.onload = async () => {
       let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
@@ -71,18 +63,81 @@ export function NftContextProvider({ children }) {
         setAnchorWalletSession(wallet_session);
         setUserLoginProvider("wax");
       }
-
-      const functions = getFunctions();
-      const addCampaign = httpsCallable(functions, "addNewCampaign");
-      addCampaign()
-        .then(() => {
-          console.log("Success");
-        })
-        .catch(() => {
-          console.log("Error");
-        });
+      addCampaign();
     };
   }
+
+  const addCampaign = async () => {
+    const firebaseDb = StartFirebase();
+
+    const dataToPost = {
+      json: true,
+      code: "fortunebirds",
+      scope: "fortunebirds",
+      table: "campaigns",
+    };
+
+    const responseFromPost = await axios.post(
+      `https://wax.pink.gg/v1/chain/get_table_rows`,
+      dataToPost
+    );
+    const dbRef = ref(getDatabase());
+
+    try {
+      get(child(dbRef, `/campaigns`)).then((snapshot) => {
+        for (let i = 0; i < responseFromPost.data?.rows?.length; i++) {
+          const runningCampaigns = responseFromPost.data?.rows[i];
+          if (
+            runningCampaigns?.asset_ids?.length > 0 &&
+            snapshot.hasChild(runningCampaigns?.asset_ids[0]) == false
+          ) {
+            axios
+              .get(
+                `https://wax.api.atomicassets.io/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
+              )
+              .then((response) => {
+                const result = response.data?.data;
+
+                const runningCampaign = {
+                  joinedAccounts: runningCampaigns?.accounts || [],
+                  assetId: result?.asset_id,
+                  contractAccount: runningCampaigns?.contract_account,
+                  nftImgUrl: `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}`,
+                  videoNftUrl: `https://ipfs.io/ipfs/${response?.data?.data?.template?.immutable_data?.video}`,
+                  isVideo:
+                    `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}` ==
+                    true
+                      ? false
+                      : `https://ipfs.io/ipfs/${response?.data?.data?.data?.video}` !=
+                        `https://ipfs.io/ipfs/undefined`
+                      ? true
+                      : false,
+                  campaignId: runningCampaigns?.id,
+                  creator: runningCampaigns?.authorized_account,
+                  entryCost: runningCampaigns?.entrycost,
+                  totalEntriesStart: runningCampaigns?.accounts?.length || 0,
+                  totalEntriesEnd: runningCampaigns?.max_users,
+                  loopTimeSeconds: runningCampaigns?.loop_time_seconds,
+                  lastRoll: runningCampaigns?.last_roll,
+                  totalEntriesEnd: runningCampaigns?.max_users,
+                };
+                set(
+                  ref(
+                    firebaseDb,
+                    `/campaigns/${runningCampaigns?.asset_ids[0]}`
+                  ),
+                  {
+                    runningCampaign,
+                  }
+                );
+              });
+          }
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     checkIfAuthorizeduser();
@@ -309,12 +364,6 @@ export function NftContextProvider({ children }) {
   return (
     <NftContext.Provider
       value={{
-        isLoadingData,
-        showPagination,
-        startIndex,
-        setStartIndex,
-        endIndex,
-        setEndIndex,
         waxUserLogIn,
         userAccount,
         setUserAccount,

@@ -1,16 +1,10 @@
 import { CreateCampaignBtn } from "../CreateCampaignsForm/CreateCampaignBtn";
 import { useRouter } from "next/router";
-import { useContext } from "react";
-import { NftContext } from "../../../context/NftContext";
 
 const NftFilter = () => {
   const router = useRouter();
-  const { pathname } = router;
-  const { setStartIndex } = useContext(NftContext);
 
   const sendToRouteOnClick = (routeName) => {
-    setStartIndex(0);
-    // window.location.href = routeName;
     router.push(routeName);
   };
 

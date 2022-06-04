@@ -10,12 +10,8 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
     setModalIsOpen(false);
   }
 
-  const {
-    isCampaignCreateationSussessful,
-    createCampaign,
-    transactionIdFromCreation,
-    erroMsg,
-  } = useContext(NftContext);
+  const { createCampaign, transactionIdFromCreation, erroMsg } =
+    useContext(NftContext);
   const [showAlert, setShowAlert] = useState(false);
   const [showError, setShowError] = useState(false);
 

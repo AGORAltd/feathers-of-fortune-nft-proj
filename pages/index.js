@@ -1,4 +1,3 @@
-import axios from "axios";
 import { onValue, ref, set } from "firebase/database";
 import Head from "next/head";
 import { useContext } from "react";
