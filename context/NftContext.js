@@ -90,6 +90,7 @@ export function NftContextProvider({ children }) {
       code: "fortunebirds",
       scope: "fortunebirds",
       table: "campaigns",
+      limit: 100,
     };
 
     const responseFromPost = await axios.post(
@@ -154,9 +155,13 @@ export function NftContextProvider({ children }) {
     }
   };
 
-  useCallback(addCampaign(), []);
+  // useCallback(addCampaign(), []);
 
-  const getCampaignData = useCallback(() => {
+  useEffect(() => {
+    getCampaignData();
+  }, [nftCardData]);
+
+  const getCampaignData = () => {
     const singularCampaignArr = [];
     const endedCampaignArr = [];
     onValue(ref(firebaseDb), (snapshot) => {
@@ -186,11 +191,7 @@ export function NftContextProvider({ children }) {
     // });
 
     setNftCardData(singularCampaignArr);
-  }, [nftCardData]);
-
-  useEffect(() => {
-    getCampaignData();
-  }, [nftCardData]);
+  };
 
   useEffect(() => {
     checkIfAuthorizeduser();
