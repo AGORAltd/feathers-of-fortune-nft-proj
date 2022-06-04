@@ -1,11 +1,10 @@
 import axios from "axios";
 
-import { useState, createContext, useEffect } from "react";
+import { useCallback, useState, createContext, useEffect } from "react";
 import {
   RPC_ENDPOINT,
   WAX_PINK_END_POINT,
 } from "../components/constants/constants";
-import { useRouter } from "next/router";
 import * as waxjs from "@waxio/waxjs/dist";
 import { StartFirebase } from "./firebase-config";
 import AnchorLink from "anchor-link";
@@ -46,6 +45,8 @@ export function NftContextProvider({ children }) {
     chains: [{ chainId: chainId, nodeUrl: `https://${nodeUrl}` }],
   });
 
+  useCallback(addCampaign(), []);
+
   if (typeof window != "undefined") {
     window.onload = async () => {
       let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
@@ -63,7 +64,6 @@ export function NftContextProvider({ children }) {
         setAnchorWalletSession(wallet_session);
         setUserLoginProvider("wax");
       }
-      addCampaign();
     };
   }
 
