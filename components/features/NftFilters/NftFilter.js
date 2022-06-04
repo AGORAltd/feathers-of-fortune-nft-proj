@@ -14,15 +14,6 @@ const NftFilter = () => {
         <div className="flex justify-between flex-col md:flex-row my-2 md:my-0">
           <button
             onClick={() => {
-              sendToRouteOnClick("/");
-            }}
-            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
-          >
-            Hot
-          </button>
-
-          <button
-            onClick={() => {
               sendToRouteOnClick("new");
             }}
             className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
@@ -32,11 +23,29 @@ const NftFilter = () => {
 
           <button
             onClick={() => {
+              sendToRouteOnClick("/");
+            }}
+            className={`filter_button py-2 px-6 mx-2 rounded my-1 md:my-0`}
+          >
+            Hot
+          </button>
+
+          <button
+            onClick={() => {
               sendToRouteOnClick("ending-soon");
             }}
             className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
           >
             Ending Soon
+          </button>
+
+          <button
+            onClick={() => {
+              sendToRouteOnClick("reveal-winner");
+            }}
+            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
+          >
+            Reveal Winner
           </button>
 
           <CreateCampaignBtn />

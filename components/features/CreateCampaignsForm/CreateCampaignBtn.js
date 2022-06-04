@@ -21,7 +21,7 @@ export const CreateCampaignBtn = () => {
           }}
           className="my_campaings_btn py-2 px-6 mx-2 rounded"
         >
-          My Campaigns
+          New Campaign
         </button>
       )}
     </>

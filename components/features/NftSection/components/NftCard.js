@@ -268,7 +268,9 @@ const NftCard = ({
           <p className="text-white nft_card_autho_name">by {creator}</p>
 
           <div className="nft_card_content_time_container text-white mx-1">
-            <p className="time_to_role_text">Time to Roll</p>
+            {timeToShow != "Reveal Winner" && (
+              <p className="time_to_role_text">Time to Roll</p>
+            )}
 
             <button
               className={`${

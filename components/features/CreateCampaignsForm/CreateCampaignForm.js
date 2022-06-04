@@ -98,7 +98,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
       >
         <div className="w-full h-full campaign_creation_form">
           <h2 className="text-3xl font-bold text-center text-white">
-            Fortune Center
+            Create Campaign
           </h2>
 
           <img
@@ -151,7 +151,7 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
                 <input
                   {...register("entrycost", { required: true })}
                   className="form_input py-2 rounded-md text-white px-3 font-semibold my-2"
-                  placeholder="PXL Amount"
+                  placeholder="Token Amount"
                   name="entrycost"
                   type={"text"}
                 />

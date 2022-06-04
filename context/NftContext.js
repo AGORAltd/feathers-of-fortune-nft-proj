@@ -45,15 +45,13 @@ export function NftContextProvider({ children }) {
   const [isTransactionSussessful, setIsTransactionSussessful] = useState();
   const [anchorWalletSession, setAnchorWalletSession] = useState(null);
   const [nftCardData, setNftCardData] = useState();
+  const [endedCampaigns, setEndedCampaigns] = useState();
 
   let chainId =
     "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4";
-
   let nodeUrl = "wax.pink.gg";
   const dapp = "PIXELCAMPAIGN";
-
   const anchorTransport = new AnchorLinkBrowserTransport();
-
   const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
 
   const anchorLink = new AnchorLink({
@@ -61,26 +59,6 @@ export function NftContextProvider({ children }) {
     verifyProofs: true,
     chains: [{ chainId: chainId, nodeUrl: `https://${nodeUrl}` }],
   });
-
-  if (typeof window != "undefined") {
-    window.onload = async () => {
-      let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
-      let sessionList = await anchorLink.listSessions(dapp);
-      let wallet_session;
-      if (sessionList && sessionList.length > 0) {
-        wallet_session = await anchorLink.restoreSession(dapp);
-        setUserAccount(String(wallet_session?.auth)?.split("@")[0]);
-        getAuthUsers();
-        setAnchorWalletSession(wallet_session);
-        setUserLoginProvider("anchor");
-      } else if (isAutoLoginAvailable) {
-        setUserAccount(wax.userAccount);
-        getAuthUsers();
-        setAnchorWalletSession(wallet_session);
-        setUserLoginProvider("wax");
-      }
-    };
-  }
 
   const addCampaign = async () => {
     const firebaseDb = StartFirebase();
@@ -155,11 +133,39 @@ export function NftContextProvider({ children }) {
     }
   };
 
-  // useCallback(addCampaign(), []);
+  if (typeof window != "undefined") {
+    window.onload = async () => {
+      let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
+      let sessionList = await anchorLink.listSessions(dapp);
+      let wallet_session;
+      if (sessionList && sessionList.length > 0) {
+        wallet_session = await anchorLink.restoreSession(dapp);
+        setUserAccount(String(wallet_session?.auth)?.split("@")[0]);
+        getAuthUsers();
+        setAnchorWalletSession(wallet_session);
+        setUserLoginProvider("anchor");
+      } else if (isAutoLoginAvailable) {
+        setUserAccount(wax.userAccount);
+        getAuthUsers();
+        setAnchorWalletSession(wallet_session);
+        setUserLoginProvider("wax");
+      }
+      addCampaign();
+    };
+  }
 
   useEffect(() => {
     getCampaignData();
   }, [nftCardData]);
+
+  useEffect(() => {
+    checkIfAuthorizeduser();
+  }, [authUserData]);
+
+  useEffect(() => {
+    setUserLoginProvider("");
+    userAccountLogin();
+  }, [userLoginProvider]);
 
   const getCampaignData = () => {
     const singularCampaignArr = [];
@@ -186,21 +192,9 @@ export function NftContextProvider({ children }) {
       }
     });
 
-    // singularCampaignArr.sort((a, b) => {
-    //   return b.totalEntriesStart - a.totalEntriesStart;
-    // });
-
     setNftCardData(singularCampaignArr);
+    setEndedCampaigns(endedCampaignArr);
   };
-
-  useEffect(() => {
-    checkIfAuthorizeduser();
-  }, [authUserData]);
-
-  useEffect(() => {
-    setUserLoginProvider("");
-    userAccountLogin();
-  }, [userLoginProvider]);
 
   const userAccountLogin = () => {
     if (userLoginProvider == "anchor") {
@@ -428,6 +422,7 @@ export function NftContextProvider({ children }) {
         setIsAuthorizedUser,
         joinCampaign,
         currentPageIndex,
+        endedCampaigns,
         setCurrentPageIndex,
         setUserLoginProvider,
         setIsTransactionSussessful,

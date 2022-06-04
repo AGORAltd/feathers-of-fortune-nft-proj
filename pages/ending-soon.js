@@ -10,47 +10,8 @@ import { onValue, ref, set } from "firebase/database";
 import { useEffect, useState } from "react";
 
 const EndingSoon = () => {
-  const firebaseDb = StartFirebase();
-  const { isLoadingData } = useContext(NftContext);
+  const { isLoadingData, nftCardData } = useContext(NftContext);
   const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
-  const [nftCardData, setNftCardData] = useState([]);
-
-  useEffect(() => {
-    const singularCampaignArr = [];
-    onValue(ref(firebaseDb), (snapshot) => {
-      if (snapshot.exists()) {
-        snapshot.child("campaigns").forEach((singularCampaign) => {
-          const singularCampaignObj = singularCampaign
-            .child("runningCampaign")
-            .val();
-
-          if (
-            Date.parse(`${singularCampaignObj.lastRoll}Z`) +
-              singularCampaignObj.loopTimeSeconds * 1000 -
-              nowUTCEpochTimeInMilliSec >
-              0 &&
-            singularCampaignObj.totalEntriesStart !=
-              singularCampaignObj.totalEntriesEnd
-          ) {
-            singularCampaignArr.push(singularCampaignObj);
-          }
-        });
-      }
-    });
-
-    singularCampaignArr.sort((a, b) => {
-      return (
-        Date.parse(`${a.lastRoll}Z`) +
-        a.loopTimeSeconds * 1000 -
-        nowUTCEpochTimeInMilliSec -
-        (Date.parse(`${b.lastRoll}Z`) +
-          b.loopTimeSeconds * 1000 -
-          nowUTCEpochTimeInMilliSec)
-      );
-    });
-
-    setNftCardData(singularCampaignArr);
-  }, [nftCardData]);
 
   return (
     <>
@@ -64,8 +25,19 @@ const EndingSoon = () => {
             <div className="container my-20 mx-auto">
               <NftFilter />
               <div className="grid grid-col-1 md:grid-cols-4 gap-8">
-                {nftCardData.length > 0
-                  ? nftCardData.map((item, index) => {
+                {nftCardData?.length > 0 &&
+                  nftCardData
+                    .sort((a, b) => {
+                      return (
+                        Date.parse(`${a.lastRoll}Z`) +
+                        a.loopTimeSeconds * 1000 -
+                        nowUTCEpochTimeInMilliSec -
+                        (Date.parse(`${b.lastRoll}Z`) +
+                          b.loopTimeSeconds * 1000 -
+                          nowUTCEpochTimeInMilliSec)
+                      );
+                    })
+                    .map((item, index) => {
                       return (
                         <div key={index} className="grid-cols-4">
                           <NftCard
@@ -85,8 +57,7 @@ const EndingSoon = () => {
                           />
                         </div>
                       );
-                    })
-                  : ""}
+                    })}
               </div>
             </div>
           </AppLayout>
