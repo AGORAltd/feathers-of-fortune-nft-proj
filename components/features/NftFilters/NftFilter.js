@@ -3,7 +3,8 @@ import { useRouter } from "next/router";
 
 const NftFilter = () => {
   const router = useRouter();
-
+  const { asPath, pathname } = useRouter();
+  console.log(pathname);
   const sendToRouteOnClick = (routeName) => {
     router.push(routeName);
   };
@@ -16,7 +17,9 @@ const NftFilter = () => {
             onClick={() => {
               sendToRouteOnClick("new");
             }}
-            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
+            className={`py-2 px-6 mx-2 rounded my-1 md:my-0 ${
+              pathname == "/new" ? "bg-blue-400" : "filter_button"
+            }`}
           >
             New
           </button>
@@ -25,7 +28,9 @@ const NftFilter = () => {
             onClick={() => {
               sendToRouteOnClick("/");
             }}
-            className={`filter_button py-2 px-6 mx-2 rounded my-1 md:my-0`}
+            className={`py-2 px-6 mx-2 rounded my-1 md:my-0 ${
+              pathname == "/" ? "bg-blue-400" : "filter_button"
+            }`}
           >
             Hot
           </button>
@@ -34,7 +39,9 @@ const NftFilter = () => {
             onClick={() => {
               sendToRouteOnClick("ending-soon");
             }}
-            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
+            className={`py-2 px-6 mx-2 rounded my-1 md:my-0 ${
+              pathname == "/ending-soon" ? "bg-blue-400" : "filter_button"
+            }`}
           >
             Ending Soon
           </button>
@@ -43,7 +50,9 @@ const NftFilter = () => {
             onClick={() => {
               sendToRouteOnClick("reveal-winner");
             }}
-            className="filter_button py-2 px-6 mx-2 rounded my-1 md:my-0"
+            className={`py-2 px-6 mx-2 rounded my-1 md:my-0 ${
+              pathname == "/reveal-winner" ? "bg-blue-400" : "filter_button"
+            }`}
           >
             Reveal Winner
           </button>

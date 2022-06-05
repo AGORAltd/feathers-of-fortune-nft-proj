@@ -63,7 +63,7 @@ const NftCard = ({
     } else {
       setTimeToShow("Reveal Winner");
     }
-  }, [timeToShow, totalEntriesEnd, totalEntriesStart]);
+  }, []);
 
   const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
     let interval = setInterval(() => {
