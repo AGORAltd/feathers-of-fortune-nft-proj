@@ -3,8 +3,7 @@ import { useRouter } from "next/router";
 
 const NftFilter = () => {
   const router = useRouter();
-  const { asPath, pathname } = useRouter();
-  console.log(pathname);
+  const { pathname } = useRouter();
   const sendToRouteOnClick = (routeName) => {
     router.push(routeName);
   };
