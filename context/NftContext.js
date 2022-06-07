@@ -23,15 +23,10 @@ import {
   ref,
   update,
   set,
-  orderByChild,
-  orderByKey,
-  onChildAdded,
-  orderByValue,
   query,
   limitToFirst,
+  orderByChild,
 } from "firebase/database";
-
-import { orderBy, serverTimestamp } from "firebase/firestore";
 
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
@@ -152,11 +147,15 @@ export function NftContextProvider({ children }) {
         getAuthUsers();
         setAnchorWalletSession(wallet_session);
         setUserLoginProvider("anchor");
-      } else if (isAutoLoginAvailable) {
+      } else if (
+        isAutoLoginAvailable &&
+        localStorage.getItem("userLoggedIn") != "false"
+      ) {
         setUserAccount(wax.userAccount);
         getAuthUsers();
-        setAnchorWalletSession(wallet_session);
+        // setAnchorWalletSession(wallet_session);
         setUserLoginProvider("wax");
+        localStorage.setItem("userLoggedIn", true);
       }
       addCampaign();
     };
@@ -235,6 +234,7 @@ export function NftContextProvider({ children }) {
       let userAccountFromLogin = await wax.login();
       setUserAccount(userAccountFromLogin);
       getAuthUsers();
+      localStorage.setItem("userLoggedIn", true);
     } catch (err) {
       console.log(err);
     }
@@ -441,6 +441,7 @@ export function NftContextProvider({ children }) {
         anchorLink,
         addMoreData,
         setAddMoreData,
+        setUserAccount,
       }}
     >
       {children}

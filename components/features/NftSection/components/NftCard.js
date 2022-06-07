@@ -427,12 +427,6 @@ const GetWinnerWhenExpired = ({
         }
       >
         <img src={`${imgSrcFinal}`} />
-        {/* 
-        <p className="pt-5">
-          {timeCountDown <= 0
-            ? <><>
-            : ` `}
-        </p> */}
 
         {timeCountDown <= 0 ? (
           <>

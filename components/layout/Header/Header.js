@@ -6,27 +6,34 @@ import { NftContext } from "../../../context/NftContext";
 import axios from "axios";
 
 const Header = () => {
-  const { userAccountLogin, userAccount, setUserLoginProvider, anchorLink } =
-    useContext(NftContext);
+  const {
+    userAccountLogin,
+    userAccount,
+    setUserLoginProvider,
+    anchorLink,
+    setUserAccount,
+  } = useContext(NftContext);
 
   const [userLoginPopup, setUserLoginPopup] = useState(false);
   const [sideBarOpen, setSideBarOpen] = useState(false);
 
   const logoutFromApp = () => {
     anchorLink.clearSessions("PIXELCAMPAIGN");
+    setUserAccount(null);
+    localStorage.setItem("userLoggedIn", false);
 
-    const logout = window.open(
-      "https://all-access.wax.io/logout",
-      "_blank",
-      "toolbar=0,location=0"
-    );
+    // const logout = window.open(
+    //   "https://all-access.wax.io/logout",
+    //   "_blank",
+    //   "toolbar=0,location=0"
+    // );
 
-    logout.resizeTo(2, 2);
+    // logout.resizeTo(2, 2);
 
-    setTimeout(() => {
-      logout.close();
-      window.location.reload();
-    }, 4500);
+    // setTimeout(() => {
+    //   logout.close();
+    //   window.location.reload();
+    // }, 4500);
   };
 
   return (
