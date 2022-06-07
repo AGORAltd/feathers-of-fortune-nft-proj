@@ -68,11 +68,13 @@ const Header = () => {
         </div>
       </SweetAlert>
       <div className="app_header h-24 flex items-center justify-between px-24 sticky flex-col md:flex-row">
-        <img
-          src="/media/logo"
-          className="h-16 my-4 md:my-0 cursor-pointer"
-          alt="brand_logo"
-        />
+        <a href="/">
+          <img
+            src="/media/logo"
+            className="h-16 my-4 md:my-0 cursor-pointer"
+            alt="brand_logo"
+          />
+        </a>
 
         <button
           onClick={() => {
@@ -111,9 +113,15 @@ const Header = () => {
         </button>
 
         <div className="menu_items items-center justify-between hidden md:flex">
-          <a className="cursor-pointer px-2">ABOUT</a>
-          <a className="cursor-pointer px-2">FAQ</a>
-          <a className="cursor-pointer px-2">TERMS AND CONDITIONS</a>
+          <a href="/about" className="cursor-pointer px-2">
+            ABOUT
+          </a>
+          <a href="/faq" className="cursor-pointer px-2">
+            FAQ
+          </a>
+          <a href="/terms-and-condition" className="cursor-pointer px-2">
+            TERMS AND CONDITIONS
+          </a>
           {!userAccount ? (
             <button
               className="login_button"

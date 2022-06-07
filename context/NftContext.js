@@ -23,7 +23,15 @@ import {
   ref,
   update,
   set,
+  orderByChild,
+  orderByKey,
+  onChildAdded,
+  orderByValue,
+  query,
+  limitToFirst,
 } from "firebase/database";
+
+import { orderBy, serverTimestamp } from "firebase/firestore";
 
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
@@ -32,6 +40,7 @@ const wax = new waxjs.WaxJS({
 
 export function NftContextProvider({ children }) {
   const firebaseDb = StartFirebase();
+
   const [userAccount, setUserAccount] = useState();
   const [authUserData, setAuthUserData] = useState();
   const [isAuthorizedUser, setIsAuthorizedUser] = useState(false);
@@ -46,6 +55,12 @@ export function NftContextProvider({ children }) {
   const [anchorWalletSession, setAnchorWalletSession] = useState(null);
   const [nftCardData, setNftCardData] = useState();
   const [endedCampaigns, setEndedCampaigns] = useState();
+  const [addMoreData, setAddMoreData] = useState(8);
+  const queryRef = query(
+    ref(firebaseDb, "/campaigns"),
+    orderByChild("timeStamp"),
+    limitToFirst(addMoreData)
+  );
 
   let chainId =
     "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4";
@@ -83,7 +98,7 @@ export function NftContextProvider({ children }) {
           const runningCampaigns = responseFromPost.data?.rows[i];
           if (
             runningCampaigns?.asset_ids?.length > 0 &&
-            snapshot.hasChild(runningCampaigns?.asset_ids[0]) == false
+            snapshot.hasChild(`${i}`) == false
           ) {
             axios
               .get(
@@ -92,7 +107,8 @@ export function NftContextProvider({ children }) {
               .then((response) => {
                 const result = response.data?.data;
 
-                const runningCampaign = {
+                set(ref(firebaseDb, `/campaigns/${i}`), {
+                  route: i,
                   joinedAccounts: runningCampaigns?.accounts || [],
                   assetId: result?.asset_id,
                   contractAccount: runningCampaigns?.contract_account,
@@ -114,16 +130,8 @@ export function NftContextProvider({ children }) {
                   loopTimeSeconds: runningCampaigns?.loop_time_seconds,
                   lastRoll: runningCampaigns?.last_roll,
                   totalEntriesEnd: runningCampaigns?.max_users,
-                };
-                set(
-                  ref(
-                    firebaseDb,
-                    `/campaigns/${runningCampaigns?.asset_ids[0]}`
-                  ),
-                  {
-                    runningCampaign,
-                  }
-                );
+                  timeStamp: new Date().getTime(),
+                });
               });
           }
         }
@@ -170,12 +178,11 @@ export function NftContextProvider({ children }) {
   const getCampaignData = () => {
     const singularCampaignArr = [];
     const endedCampaignArr = [];
-    onValue(ref(firebaseDb), (snapshot) => {
+
+    onValue(queryRef, (snapshot) => {
       if (snapshot.exists()) {
-        snapshot.child("campaigns").forEach((singularCampaign) => {
-          const singularCampaignObj = singularCampaign
-            .child("runningCampaign")
-            .val();
+        snapshot.forEach((singularCampaign) => {
+          const singularCampaignObj = singularCampaign.val();
           if (
             Date.parse(`${singularCampaignObj.lastRoll}Z`) +
               singularCampaignObj.loopTimeSeconds * 1000 -
@@ -185,7 +192,7 @@ export function NftContextProvider({ children }) {
               singularCampaignObj.totalEntriesEnd
           ) {
             singularCampaignArr.push(singularCampaignObj);
-          } else {
+          } else if (singularCampaignObj.totalEntriesStart > 0) {
             endedCampaignArr.push(singularCampaignObj);
           }
         });
@@ -328,7 +335,7 @@ export function NftContextProvider({ children }) {
     contractAccount,
     campaignId,
     entryCost,
-    assetId,
+    route,
     joinedAccountsArr = [],
     totalUsersEntered
   ) => {
@@ -356,7 +363,7 @@ export function NftContextProvider({ children }) {
         setIsTransactionSussessful(true);
         if (result.transaction.id) {
           joinedAccountsArr.push(userAccount);
-          update(ref(firebaseDb, `/campaigns/${assetId}/runningCampaign`), {
+          update(ref(firebaseDb, `/campaigns/${route}`), {
             joinedAccounts: joinedAccountsArr,
             totalEntriesStart: totalUsersEntered + 1,
           });
@@ -393,7 +400,7 @@ export function NftContextProvider({ children }) {
         setIsTransactionSussessful(true);
         if (result?.transaction_id) {
           joinedAccountsArr.push(userAccount);
-          update(ref(firebaseDb, `/campaigns/${assetId}/runningCampaign`), {
+          update(ref(firebaseDb, `/campaigns/${route}`), {
             joinedAccounts: joinedAccountsArr,
             totalEntriesStart: totalUsersEntered + 1,
           });
@@ -432,6 +439,8 @@ export function NftContextProvider({ children }) {
         userLoginProvider,
         transactionIdFromCreation,
         anchorLink,
+        addMoreData,
+        setAddMoreData,
       }}
     >
       {children}

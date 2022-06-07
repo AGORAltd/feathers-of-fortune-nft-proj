@@ -5,7 +5,8 @@ import AppLayout from "../components/layout/AppLayout";
 import { NftContext } from "../context/NftContext";
 
 const RevealWinner = () => {
-  const { isLoadingData, endedCampaigns } = useContext(NftContext);
+  const { isLoadingData, endedCampaigns, addMoreData, setAddMoreData } =
+    useContext(NftContext);
 
   return (
     <>
@@ -37,12 +38,25 @@ const RevealWinner = () => {
                             videoNftUrl={item.videoNftUrl}
                             assetId={item.assetId}
                             joinedAccounts={item.joinedAccounts}
+                            route={item.route}
                           />
                         </div>
                       );
                     })
                   : ""}
               </div>
+              {endedCampaigns?.length > 0 && (
+                <div className="flex align-middle justify-center cursor-pointer mt-4">
+                  <h1
+                    className="w-24 bg-blue-500 text-center p-2"
+                    onClick={() => {
+                      setAddMoreData(addMoreData + 8);
+                    }}
+                  >
+                    Load More
+                  </h1>
+                </div>
+              )}
             </div>
           </AppLayout>
         </>

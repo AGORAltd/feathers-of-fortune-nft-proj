@@ -53,7 +53,7 @@ const NftFilter = () => {
               pathname == "/reveal-winner" ? "bg-blue-400" : "filter_button"
             }`}
           >
-            Reveal Winner
+            Winners Circle
           </button>
 
           <CreateCampaignBtn />

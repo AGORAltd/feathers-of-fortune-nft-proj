@@ -10,7 +10,8 @@ import { onValue, ref, set } from "firebase/database";
 import { useEffect, useState } from "react";
 
 const EndingSoon = () => {
-  const { isLoadingData, nftCardData } = useContext(NftContext);
+  const { isLoadingData, nftCardData, addMoreData, setAddMoreData } =
+    useContext(NftContext);
   const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
 
   return (
@@ -54,11 +55,24 @@ const EndingSoon = () => {
                             videoNftUrl={item.videoNftUrl}
                             assetId={item.assetId}
                             joinedAccounts={item.joinedAccounts}
+                            route={item.route}
                           />
                         </div>
                       );
                     })}
               </div>
+              {nftCardData?.length > 0 && (
+                <div className="flex align-middle justify-center cursor-pointer mt-4">
+                  <h1
+                    className="w-24 bg-blue-500 text-center p-2"
+                    onClick={() => {
+                      setAddMoreData(addMoreData + 8);
+                    }}
+                  >
+                    Load More
+                  </h1>
+                </div>
+              )}
             </div>
           </AppLayout>
         </>

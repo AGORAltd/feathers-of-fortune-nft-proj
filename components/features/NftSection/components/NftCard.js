@@ -23,6 +23,7 @@ const NftCard = ({
   videoNftUrl,
   assetId,
   joinedAccounts,
+  route,
 }) => {
   const {
     joinCampaign,
@@ -61,7 +62,7 @@ const NftCard = ({
     if (totalEntriesEnd != totalEntriesStart) {
       updateTimeToShow(finalUTCEpochTimeInMilliSec);
     } else {
-      setTimeToShow("Reveal Winner");
+      setTimeToShow("Winners Circle");
     }
   }, []);
 
@@ -84,7 +85,7 @@ const NftCard = ({
 
       if (distance <= 0) {
         clearInterval(interval);
-        setTimeToShow("Reveal Winner");
+        setTimeToShow("Winners Circle");
       }
     }, 1000);
   };
@@ -124,7 +125,7 @@ const NftCard = ({
                   contractAccount,
                   campaignId,
                   entryCost,
-                  assetId,
+                  route,
                   joinedAccounts,
                   totalEntriesStart
                 ).then(() => {
@@ -268,13 +269,13 @@ const NftCard = ({
           <p className="text-white nft_card_autho_name">by {creator}</p>
 
           <div className="nft_card_content_time_container text-white mx-1">
-            {timeToShow != "Reveal Winner" && (
+            {timeToShow != "Winners Circle" && (
               <p className="time_to_role_text">Time to Roll</p>
             )}
 
             <button
               className={`${
-                timeToShow == "Reveal Winner"
+                timeToShow == "Winners Circle"
                   ? "pointer-events-auto"
                   : "pointer-events-none"
               }`}
@@ -310,12 +311,12 @@ const NftCard = ({
               userAccount ? setShowAlert(true) : setShowNotLoggedInMsg(true);
             }}
             className={`my-2.5 ${
-              timeToShow == "Reveal Winner"
+              timeToShow == "Winners Circle"
                 ? "bg-zinc-500 py-2 px-2 rounded-md text-white pointer-events-none"
                 : "join_campaign_now_btn"
             }`}
           >
-            {timeToShow == "Reveal Winner" ? "ENDED" : "JOIN NOW"}
+            {timeToShow == "Winners Circle" ? "ENDED" : "JOIN NOW"}
           </button>
           <div className="entrants_container cursor-pointer">
             <p className="entrants_counter font-semibold py-2.5">Entrants</p>
@@ -391,6 +392,8 @@ const GetWinnerWhenExpired = ({
       );
     });
 
+    console.log(currentWinner);
+
     setCurrentWinnerUser(() => currentWinner[0]?.winner);
   };
 
@@ -424,12 +427,27 @@ const GetWinnerWhenExpired = ({
         }
       >
         <img src={`${imgSrcFinal}`} />
-
+        {/* 
         <p className="pt-5">
           {timeCountDown <= 0
-            ? `Winner of the contest is ${currentWinnerUser}`
-            : ` Revealing the winner in ${timeCountDown}`}
-        </p>
+            ? <><>
+            : ` `}
+        </p> */}
+
+        {timeCountDown <= 0 ? (
+          <>
+            <p className="pt-5">
+              Winner of the contest is
+              <span className="font-bold text-blue-400">
+                {" " + currentWinnerUser}
+              </span>
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="pt-5">Revealing the winner in {timeCountDown}</p>
+          </>
+        )}
       </SweetAlert>
     </>
   );

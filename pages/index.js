@@ -8,7 +8,8 @@ import AppLayout from "../components/layout/AppLayout";
 import { NftContext } from "../context/NftContext";
 
 export default function Home() {
-  const { isLoadingData, nftCardData } = useContext(NftContext);
+  const { isLoadingData, nftCardData, addMoreData, setAddMoreData } =
+    useContext(NftContext);
 
   return (
     <>
@@ -58,12 +59,25 @@ export default function Home() {
                               videoNftUrl={item.videoNftUrl}
                               assetId={item.assetId}
                               joinedAccounts={item.joinedAccounts}
+                              route={item.route}
                             />
                           </div>
                         );
                       })
                   : ""}
               </div>
+              {nftCardData?.length > 0 && (
+                <div className="flex align-middle justify-center cursor-pointer mt-4">
+                  <h1
+                    className="w-24 bg-blue-500 text-center p-2"
+                    onClick={() => {
+                      setAddMoreData(addMoreData + 8);
+                    }}
+                  >
+                    Load More
+                  </h1>
+                </div>
+              )}
             </div>
           </AppLayout>
         </>
