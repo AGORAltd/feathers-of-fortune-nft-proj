@@ -54,7 +54,7 @@ const New = () => {
                       .reverse()
                   : ""}
               </div>
-              {nftCardData?.length > 0 && (
+              {/* {nftCardData?.length > 0 && (
                 <div className="flex align-middle justify-center cursor-pointer mt-4">
                   <h1
                     className="w-24 bg-blue-500 text-center p-2"
@@ -65,7 +65,7 @@ const New = () => {
                     Load More
                   </h1>
                 </div>
-              )}
+              )} */}
             </div>
           </AppLayout>
         </>

@@ -50,11 +50,12 @@ export function NftContextProvider({ children }) {
   const [anchorWalletSession, setAnchorWalletSession] = useState(null);
   const [nftCardData, setNftCardData] = useState();
   const [endedCampaigns, setEndedCampaigns] = useState();
-  const [addMoreData, setAddMoreData] = useState(8);
+  const [addMoreData, setAddMoreData] = useState(20);
+
   const queryRef = query(
     ref(firebaseDb, "/campaigns"),
-    orderByChild("timeStamp"),
-    limitToFirst(addMoreData)
+    orderByChild("timeStamp")
+    // limitToFirst(addMoreData)
   );
 
   let chainId =
