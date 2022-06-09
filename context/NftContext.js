@@ -149,7 +149,7 @@ export function NftContextProvider({ children }) {
         }
       });
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
 
