@@ -124,7 +124,7 @@ export function NftContextProvider({ children }) {
                   joinedAccounts: runningCampaigns?.accounts || [],
                   assetId: result?.asset_id,
                   contractAccount: runningCampaigns?.contract_account,
-                  nftImgUrl: `https://ipfs.atomichub.io/ipfs/${response?.data?.data?.data?.img}`,
+                  nftImgUrl: `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}`,
                   videoNftUrl: `https://ipfs.io/ipfs/${response?.data?.data?.template?.immutable_data?.video}`,
                   isVideo:
                     `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}` ==
