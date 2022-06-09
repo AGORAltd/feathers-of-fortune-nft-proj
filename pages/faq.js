@@ -5,7 +5,7 @@ const FAQ = () => {
   return (
     <div>
       <AppLayout>
-        <p className="text-white pt-7">
+        <p className="text-white pt-7 container mx-auto">
           What is Lorem Ipsum? Lorem Ipsum is simply dummy text of the printing
           and typesetting industry. Lorem Ipsum has been the industry's standard
           dummy text ever since the 1500s, when an unknown printer took a galley

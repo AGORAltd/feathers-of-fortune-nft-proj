@@ -1,4 +1,3 @@
-import { ref, set } from "firebase/database";
 import Head from "next/head";
 import { useContext } from "react";
 

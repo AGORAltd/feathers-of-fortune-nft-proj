@@ -1,11 +1,5 @@
 import axios from "axios";
-import {
-  useCallback,
-  useState,
-  createContext,
-  useEffect,
-  useMemo,
-} from "react";
+import { useState, createContext, useEffect } from "react";
 import {
   RPC_ENDPOINT,
   WAX_PINK_END_POINT,
@@ -24,8 +18,7 @@ import {
   update,
   set,
   query,
-  limitToFirst,
-  orderByChild,
+  onChildChanged,
 } from "firebase/database";
 
 const wax = new waxjs.WaxJS({
@@ -35,6 +28,40 @@ const wax = new waxjs.WaxJS({
 
 export function NftContextProvider({ children }) {
   const firebaseDb = StartFirebase();
+  const [nftCardData, setNftCardData] = useState([]);
+  const [endedCampaigns, setEndedCampaigns] = useState();
+  const queryRef = query(ref(firebaseDb, "/campaigns"));
+  const [snapVal, setSnapVal] = useState();
+
+  useEffect(() => {
+    const singularCampaignArr = [];
+    const endedCampaignArr = [];
+
+    onValue(queryRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setSnapVal(snapshot.val());
+        snapshot.forEach((singularCampaign) => {
+          const singularCampaignObj = singularCampaign.val();
+          if (
+            Date.parse(`${singularCampaignObj.lastRoll}Z`) +
+              singularCampaignObj.loopTimeSeconds * 1000 -
+              nowUTCEpochTimeInMilliSec >
+              0 &&
+            singularCampaignObj.totalEntriesStart !=
+              singularCampaignObj.totalEntriesEnd
+          ) {
+            singularCampaignArr.push(singularCampaignObj);
+          } else if (singularCampaignObj.totalEntriesStart > 0) {
+            endedCampaignArr.push(singularCampaignObj);
+          }
+        });
+      }
+      setEndedCampaigns(endedCampaignArr);
+      setNftCardData(singularCampaignArr);
+    });
+  }, [JSON.stringify(snapVal)]);
+
+  const dbRef = ref(getDatabase());
 
   const [userAccount, setUserAccount] = useState();
   const [authUserData, setAuthUserData] = useState();
@@ -48,15 +75,7 @@ export function NftContextProvider({ children }) {
   const [userLoginProvider, setUserLoginProvider] = useState();
   const [isTransactionSussessful, setIsTransactionSussessful] = useState();
   const [anchorWalletSession, setAnchorWalletSession] = useState(null);
-  const [nftCardData, setNftCardData] = useState();
-  const [endedCampaigns, setEndedCampaigns] = useState();
   const [addMoreData, setAddMoreData] = useState(20);
-
-  const queryRef = query(
-    ref(firebaseDb, "/campaigns"),
-    orderByChild("timeStamp")
-    // limitToFirst(addMoreData)
-  );
 
   let chainId =
     "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4";
@@ -72,8 +91,6 @@ export function NftContextProvider({ children }) {
   });
 
   const addCampaign = async () => {
-    const firebaseDb = StartFirebase();
-
     const dataToPost = {
       json: true,
       code: "fortunebirds",
@@ -86,7 +103,6 @@ export function NftContextProvider({ children }) {
       `https://wax.pink.gg/v1/chain/get_table_rows`,
       dataToPost
     );
-    const dbRef = ref(getDatabase());
 
     try {
       get(child(dbRef, `/campaigns`)).then((snapshot) => {
@@ -108,7 +124,7 @@ export function NftContextProvider({ children }) {
                   joinedAccounts: runningCampaigns?.accounts || [],
                   assetId: result?.asset_id,
                   contractAccount: runningCampaigns?.contract_account,
-                  nftImgUrl: `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}`,
+                  nftImgUrl: `https://ipfs.atomichub.io/ipfs/${response?.data?.data?.data?.img}`,
                   videoNftUrl: `https://ipfs.io/ipfs/${response?.data?.data?.template?.immutable_data?.video}`,
                   isVideo:
                     `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}` ==
@@ -154,17 +170,12 @@ export function NftContextProvider({ children }) {
       ) {
         setUserAccount(wax.userAccount);
         getAuthUsers();
-        // setAnchorWalletSession(wallet_session);
         setUserLoginProvider("wax");
         localStorage.setItem("userLoggedIn", true);
       }
       addCampaign();
     };
   }
-
-  useEffect(() => {
-    getCampaignData();
-  }, [nftCardData]);
 
   useEffect(() => {
     checkIfAuthorizeduser();
@@ -174,34 +185,6 @@ export function NftContextProvider({ children }) {
     setUserLoginProvider("");
     userAccountLogin();
   }, [userLoginProvider]);
-
-  const getCampaignData = () => {
-    const singularCampaignArr = [];
-    const endedCampaignArr = [];
-
-    onValue(queryRef, (snapshot) => {
-      if (snapshot.exists()) {
-        snapshot.forEach((singularCampaign) => {
-          const singularCampaignObj = singularCampaign.val();
-          if (
-            Date.parse(`${singularCampaignObj.lastRoll}Z`) +
-              singularCampaignObj.loopTimeSeconds * 1000 -
-              nowUTCEpochTimeInMilliSec >
-              0 &&
-            singularCampaignObj.totalEntriesStart !=
-              singularCampaignObj.totalEntriesEnd
-          ) {
-            singularCampaignArr.push(singularCampaignObj);
-          } else if (singularCampaignObj.totalEntriesStart > 0) {
-            endedCampaignArr.push(singularCampaignObj);
-          }
-        });
-      }
-    });
-
-    setNftCardData(singularCampaignArr);
-    setEndedCampaigns(endedCampaignArr);
-  };
 
   const userAccountLogin = () => {
     if (userLoginProvider == "anchor") {

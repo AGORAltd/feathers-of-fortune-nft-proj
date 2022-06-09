@@ -62,7 +62,7 @@ const NftCard = ({
     if (totalEntriesEnd != totalEntriesStart) {
       updateTimeToShow(finalUTCEpochTimeInMilliSec);
     } else {
-      setTimeToShow("Winners Circle");
+      setTimeToShow("Reveal Winner");
     }
   }, []);
 
@@ -269,7 +269,7 @@ const NftCard = ({
           <p className="text-white nft_card_autho_name">by {creator}</p>
 
           <div className="nft_card_content_time_container text-white mx-1">
-            {timeToShow != "Winners Circle" && (
+            {timeToShow != "Reveal Winner" && (
               <p className="time_to_role_text">Time to Roll</p>
             )}
 
@@ -392,8 +392,6 @@ const GetWinnerWhenExpired = ({
       );
     });
 
-    console.log(currentWinner);
-
     setCurrentWinnerUser(() => currentWinner[0]?.winner);
   };
 
@@ -432,8 +430,8 @@ const GetWinnerWhenExpired = ({
           <>
             <p className="pt-5">
               Winner of the contest is
-              <span className="font-bold text-blue-400">
-                {" " + currentWinnerUser}
+              <span className="font-bold text-2xl text-blue-400">
+                <br /> {currentWinnerUser}
               </span>
             </p>
           </>
