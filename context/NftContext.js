@@ -19,6 +19,7 @@ import {
   set,
   query,
   onChildChanged,
+  orderByChild,
 } from "firebase/database";
 
 const wax = new waxjs.WaxJS({
