@@ -25,10 +25,10 @@ const NftFilter = () => {
 
           <button
             onClick={() => {
-              sendToRouteOnClick("/");
+              sendToRouteOnClick("/hot");
             }}
             className={`py-2 px-6 mx-2 rounded my-1 md:my-0 ${
-              pathname == "/" ? "bg-blue-400" : "filter_button"
+              pathname == "/hot" ? "bg-blue-400" : "filter_button"
             }`}
           >
             Hot
@@ -36,10 +36,10 @@ const NftFilter = () => {
 
           <button
             onClick={() => {
-              sendToRouteOnClick("ending-soon");
+              sendToRouteOnClick("/");
             }}
             className={`py-2 px-6 mx-2 rounded my-1 md:my-0 ${
-              pathname == "/ending-soon" ? "bg-blue-400" : "filter_button"
+              pathname == "/" ? "bg-blue-400" : "filter_button"
             }`}
           >
             Ending Soon

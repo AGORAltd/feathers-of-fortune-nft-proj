@@ -1,6 +1,4 @@
-import Head from "next/head";
 import { useContext } from "react";
-
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/components/NftCard";
 import AppLayout from "../components/layout/AppLayout";
@@ -10,6 +8,8 @@ export default function Home() {
   const { isLoadingData, nftCardData, addMoreData, setAddMoreData } =
     useContext(NftContext);
 
+  const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
+
   return (
     <>
       {isLoadingData ? (
@@ -18,52 +18,44 @@ export default function Home() {
         </div>
       ) : (
         <>
-          <Head>
-            <title>Feathers Of Fortune</title>
-            <link rel="icon" href="/favicon.ico" />
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link
-              rel="preconnect"
-              href="https://fonts.gstatic.com"
-              crossOrigin="true"
-            />
-            <link
-              href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
-              rel="stylesheet"
-            />
-          </Head>
           <AppLayout>
             <div className="container my-20 mx-auto">
               <NftFilter />
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                {nftCardData?.length > 0
-                  ? nftCardData
-                      .sort((a, b) => {
-                        return b.totalEntriesStart - a.totalEntriesStart;
-                      })
-                      .map((item, index) => {
-                        return (
-                          <div key={index} className="grid-cols-4">
-                            <NftCard
-                              nftSrc={item.nftImgUrl}
-                              campaignId={item.campaignId}
-                              creator={item.creator}
-                              loopTimeSeconds={item.loopTimeSeconds}
-                              totalEntriesStart={item.totalEntriesStart}
-                              totalEntriesEnd={item.totalEntriesEnd}
-                              entryCost={item.entryCost}
-                              contractAccount={item.contractAccount}
-                              lastRoll={item.lastRoll}
-                              isVideo={item.isVideo}
-                              videoNftUrl={item.videoNftUrl}
-                              assetId={item.assetId}
-                              joinedAccounts={item.joinedAccounts}
-                              route={item.route}
-                            />
-                          </div>
-                        );
-                      })
-                  : ""}
+              <div className="grid grid-col-1 lg:grid-cols-4 gap-8">
+                {nftCardData?.length > 0 &&
+                  nftCardData
+                    .sort((a, b) => {
+                      return (
+                        Date.parse(`${a.lastRoll}Z`) +
+                        a.loopTimeSeconds * 1000 -
+                        nowUTCEpochTimeInMilliSec -
+                        (Date.parse(`${b.lastRoll}Z`) +
+                          b.loopTimeSeconds * 1000 -
+                          nowUTCEpochTimeInMilliSec)
+                      );
+                    })
+                    .map((item, index) => {
+                      return (
+                        <div key={index} className="grid-cols-4 ">
+                          <NftCard
+                            nftSrc={item.nftImgUrl}
+                            campaignId={item.campaignId}
+                            creator={item.creator}
+                            loopTimeSeconds={item.loopTimeSeconds}
+                            totalEntriesStart={item.totalEntriesStart}
+                            totalEntriesEnd={item.totalEntriesEnd}
+                            entryCost={item.entryCost}
+                            contractAccount={item.contractAccount}
+                            lastRoll={item.lastRoll}
+                            isVideo={item.isVideo}
+                            videoNftUrl={item.videoNftUrl}
+                            assetId={item.assetId}
+                            joinedAccounts={item.joinedAccounts}
+                            route={item.route}
+                          />
+                        </div>
+                      );
+                    })}
               </div>
               {/* {nftCardData?.length > 0 && (
                 <div className="flex align-middle justify-center cursor-pointer mt-4">

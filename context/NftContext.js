@@ -18,7 +18,7 @@ import {
   update,
   set,
   query,
-  onChildChanged,
+  orderByValue,
   orderByChild,
 } from "firebase/database";
 
@@ -31,8 +31,12 @@ export function NftContextProvider({ children }) {
   const firebaseDb = StartFirebase();
   const [nftCardData, setNftCardData] = useState([]);
   const [endedCampaigns, setEndedCampaigns] = useState();
-  const queryRef = query(ref(firebaseDb, "/campaigns"));
+  const queryRef = query(ref(firebaseDb, "/campaigns"), orderByChild("route"));
   const [snapVal, setSnapVal] = useState();
+
+  useEffect(() => {
+    addCampaign();
+  }, []);
 
   useEffect(() => {
     const singularCampaignArr = [];
@@ -97,7 +101,7 @@ export function NftContextProvider({ children }) {
       code: "fortunebirds",
       scope: "fortunebirds",
       table: "campaigns",
-      limit: 100,
+      limit: "100",
     };
 
     const responseFromPost = await axios.post(
@@ -107,47 +111,53 @@ export function NftContextProvider({ children }) {
 
     try {
       get(child(dbRef, `/campaigns`)).then((snapshot) => {
-        for (let i = 0; i < responseFromPost.data?.rows?.length; i++) {
-          const runningCampaigns = responseFromPost.data?.rows[i];
-          if (
-            runningCampaigns?.asset_ids?.length > 0 &&
-            snapshot.hasChild(`${i}`) == false
-          ) {
-            axios
-              .get(
-                `https://wax.api.atomicassets.io/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
-              )
-              .then((response) => {
-                const result = response.data?.data;
+        responseFromPost.data?.rows
+          .reverse()
+          .forEach((runningCampaigns, index) => {
+            if (runningCampaigns?.asset_ids?.length > 0) {
+              axios
+                .get(
+                  `https://wax.api.atomicassets.io/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
+                )
+                .then((response) => {
+                  const result = response.data?.data;
+                  const campaignObj = {
+                    route: index,
+                    joinedAccounts: runningCampaigns?.accounts || [],
+                    assetId: result?.asset_id,
+                    contractAccount: runningCampaigns?.contract_account,
+                    nftImgUrl: `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}`,
+                    videoNftUrl: `https://ipfs.io/ipfs/${response?.data?.data?.template?.immutable_data?.video}`,
+                    isVideo:
+                      `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}` ==
+                      true
+                        ? false
+                        : `https://ipfs.io/ipfs/${response?.data?.data?.data?.video}` !=
+                          `https://ipfs.io/ipfs/undefined`
+                        ? true
+                        : false,
+                    campaignId: runningCampaigns?.id,
+                    creator: runningCampaigns?.authorized_account,
+                    entryCost: runningCampaigns?.entrycost,
+                    totalEntriesStart: runningCampaigns?.accounts?.length || 0,
+                    totalEntriesEnd: runningCampaigns?.max_users,
+                    loopTimeSeconds: runningCampaigns?.loop_time_seconds,
+                    lastRoll: runningCampaigns?.last_roll,
+                    totalEntriesEnd: runningCampaigns?.max_users,
+                    timeStamp: new Date().getTime(),
+                  };
 
-                set(ref(firebaseDb, `/campaigns/${i}`), {
-                  route: i,
-                  joinedAccounts: runningCampaigns?.accounts || [],
-                  assetId: result?.asset_id,
-                  contractAccount: runningCampaigns?.contract_account,
-                  nftImgUrl: `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}`,
-                  videoNftUrl: `https://ipfs.io/ipfs/${response?.data?.data?.template?.immutable_data?.video}`,
-                  isVideo:
-                    `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}` ==
-                    true
-                      ? false
-                      : `https://ipfs.io/ipfs/${response?.data?.data?.data?.video}` !=
-                        `https://ipfs.io/ipfs/undefined`
-                      ? true
-                      : false,
-                  campaignId: runningCampaigns?.id,
-                  creator: runningCampaigns?.authorized_account,
-                  entryCost: runningCampaigns?.entrycost,
-                  totalEntriesStart: runningCampaigns?.accounts?.length || 0,
-                  totalEntriesEnd: runningCampaigns?.max_users,
-                  loopTimeSeconds: runningCampaigns?.loop_time_seconds,
-                  lastRoll: runningCampaigns?.last_roll,
-                  totalEntriesEnd: runningCampaigns?.max_users,
-                  timeStamp: new Date().getTime(),
+                  if (
+                    snapshot.hasChild(`${index}/${campaignObj.route}`) != true
+                  ) {
+                    set(
+                      ref(firebaseDb, `/campaigns/${campaignObj.route}`),
+                      campaignObj
+                    );
+                  }
                 });
-              });
-          }
-        }
+            }
+          });
       });
     } catch (error) {
       console.log(error.response);
@@ -174,7 +184,6 @@ export function NftContextProvider({ children }) {
         setUserLoginProvider("wax");
         localStorage.setItem("userLoggedIn", true);
       }
-      addCampaign();
     };
   }
 

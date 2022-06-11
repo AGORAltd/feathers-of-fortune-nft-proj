@@ -59,11 +59,12 @@ const NftCard = ({
   }, [transactionId]);
 
   useEffect(() => {
-    if (totalEntriesEnd != totalEntriesStart) {
-      updateTimeToShow(finalUTCEpochTimeInMilliSec);
-    } else {
-      setTimeToShow("Reveal Winner");
-    }
+    updateTimeToShow(finalUTCEpochTimeInMilliSec);
+    // if (totalEntriesEnd != totalEntriesStart) {
+    //   updateTimeToShow(finalUTCEpochTimeInMilliSec);
+    // } else {
+    //   setTimeToShow("Reveal Winner");
+    // }
   }, []);
 
   const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
@@ -83,7 +84,7 @@ const NftCard = ({
         }`
       );
 
-      if (distance <= 0) {
+      if (distance <= 0 || totalEntriesEnd == totalEntriesStart) {
         clearInterval(interval);
         setTimeToShow("Winners Circle");
       }
@@ -248,9 +249,8 @@ const NftCard = ({
               />
             </>
           ) : (
-            <div>
+            <div className="video_card_container">
               <video
-                height="326px"
                 width={"100%"}
                 className="video_nft object-cover"
                 autoPlay
