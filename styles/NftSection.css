@@ -65,5 +65,11 @@
 }
 
 .video_nft {
-  height: 326px;
+  min-height: 326px;
+}
+
+@media (min-width: 1441px) {
+  .video_nft {
+    height: 400px;
+  }
 }

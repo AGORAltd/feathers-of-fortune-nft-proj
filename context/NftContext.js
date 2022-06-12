@@ -16,8 +16,8 @@ import {
   set,
   query,
   orderByChild,
+  startAt,
 } from "firebase/database";
-import { serverTimestamp } from "firebase/firestore";
 
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
@@ -30,7 +30,7 @@ export function NftContextProvider({ children }) {
   const [endedCampaigns, setEndedCampaigns] = useState();
   const queryRef = query(
     ref(firebaseDb, "/campaigns"),
-    orderByChild("timeStamp")
+    orderByChild("campaignId")
   );
 
   const [snapVal, setSnapVal] = useState();
@@ -42,6 +42,7 @@ export function NftContextProvider({ children }) {
     onValue(queryRef, (snapshot) => {
       if (snapshot.exists()) {
         setSnapVal(snapshot.val());
+
         snapshot.forEach((singularCampaign) => {
           const singularCampaignObj = singularCampaign.val();
           if (
@@ -91,14 +92,11 @@ export function NftContextProvider({ children }) {
   });
 
   const addCampaign = async () => {
-    const allRunningCampaignsWithAsset = [];
-
     const dataToPost = {
       json: true,
       code: "fortunebirds",
       scope: "fortunebirds",
       table: "campaigns",
-      limit: "100",
     };
 
     const responseFromPost = await axios.post(
@@ -106,14 +104,13 @@ export function NftContextProvider({ children }) {
       dataToPost
     );
 
-    responseFromPost.data?.rows.reverse().forEach((runningCampaigns, index) => {
+    responseFromPost.data?.rows.forEach((runningCampaigns, index) => {
       axios
         .get(
           `https://wax.api.atomicassets.io/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
         )
         .then((response) => {
           const result = response.data?.data;
-
           const campaignObj = {
             route: result?.asset_id + index,
             joinedAccounts: runningCampaigns?.accounts || [],
@@ -136,28 +133,22 @@ export function NftContextProvider({ children }) {
             loopTimeSeconds: runningCampaigns?.loop_time_seconds,
             lastRoll: runningCampaigns?.last_roll,
             totalEntriesEnd: runningCampaigns?.max_users,
-            timeStamp: serverTimestamp(),
           };
 
-          allRunningCampaignsWithAsset.push(campaignObj);
-        })
-        .then(() => {
-          allRunningCampaignsWithAsset.forEach((runningCampaign) => {
-            onValue(
-              ref(firebaseDb, `/campaigns/${runningCampaign.route}`),
-              (snapshot) => {
-                if (snapshot.exists() != true) {
-                  set(
-                    ref(firebaseDb, `/campaigns/${runningCampaign.route}`),
-                    runningCampaign
-                  );
-                } else {
-                  null;
-                }
-              },
-              { onlyOnce: true }
-            );
-          });
+          onValue(
+            ref(firebaseDb, `/campaigns/${campaignObj.route}`),
+            (snapshot) => {
+              if (snapshot.exists() == false) {
+                set(
+                  ref(firebaseDb, `/campaigns/${campaignObj.route}`),
+                  campaignObj
+                );
+              } else {
+                null;
+              }
+            },
+            { onlyOnce: true }
+          );
         });
     });
   };
