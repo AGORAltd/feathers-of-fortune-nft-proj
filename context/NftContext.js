@@ -9,6 +9,8 @@ import { StartFirebase } from "./firebase-config";
 import AnchorLink from "anchor-link";
 import AnchorLinkBrowserTransport from "anchor-link-browser-transport";
 export const NftContext = createContext();
+import { useRouter } from "next/router";
+
 import {
   onValue,
   ref,
@@ -16,7 +18,6 @@ import {
   set,
   query,
   orderByChild,
-  startAt,
 } from "firebase/database";
 
 const wax = new waxjs.WaxJS({
@@ -32,6 +33,8 @@ export function NftContextProvider({ children }) {
     ref(firebaseDb, "/campaigns"),
     orderByChild("campaignId")
   );
+
+  const { asPath } = useRouter();
 
   const [snapVal, setSnapVal] = useState();
 
@@ -62,7 +65,7 @@ export function NftContextProvider({ children }) {
       setEndedCampaigns(endedCampaignArr);
       setNftCardData(singularCampaignArr);
     });
-  }, [JSON.stringify(snapVal)]);
+  }, [JSON.stringify(snapVal), asPath]);
 
   const [userAccount, setUserAccount] = useState();
   const [authUserData, setAuthUserData] = useState();
