@@ -5,7 +5,11 @@ const NftFilter = () => {
   const router = useRouter();
   const { pathname } = useRouter();
   const sendToRouteOnClick = (routeName) => {
-    router.push(routeName);
+    if (routeName == "new") {
+      window.location.pathname = "/new";
+    } else {
+      router.push(routeName);
+    }
   };
 
   return (

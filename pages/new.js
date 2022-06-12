@@ -46,7 +46,7 @@ const New = () => {
                         );
                       })
                       .reverse()
-                  : ""}
+                  : null}
               </div>
             </div>
           </AppLayout>
