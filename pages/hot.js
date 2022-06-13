@@ -33,22 +33,7 @@ const EndingSoon = () => {
                       .map((item, index) => {
                         return (
                           <div key={index} className="grid-cols-4">
-                            <NftCard
-                              nftSrc={item.nftImgUrl}
-                              campaignId={item.campaignId}
-                              creator={item.creator}
-                              loopTimeSeconds={item.loopTimeSeconds}
-                              totalEntriesStart={item.totalEntriesStart}
-                              totalEntriesEnd={item.totalEntriesEnd}
-                              entryCost={item.entryCost}
-                              contractAccount={item.contractAccount}
-                              lastRoll={item.lastRoll}
-                              isVideo={item.isVideo}
-                              videoNftUrl={item.videoNftUrl}
-                              assetId={item.assetId}
-                              joinedAccounts={item.joinedAccounts}
-                              route={item.route}
-                            />
+                            <NftCard {...item} />
                           </div>
                         );
                       })

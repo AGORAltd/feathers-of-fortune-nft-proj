@@ -41,22 +41,7 @@ export default function Home() {
                     .map((item, index) => {
                       return (
                         <div key={index} className="grid-cols-4 ">
-                          <NftCard
-                            nftSrc={item.nftImgUrl}
-                            campaignId={item.campaignId}
-                            creator={item.creator}
-                            loopTimeSeconds={item.loopTimeSeconds}
-                            totalEntriesStart={item.totalEntriesStart}
-                            totalEntriesEnd={item.totalEntriesEnd}
-                            entryCost={item.entryCost}
-                            contractAccount={item.contractAccount}
-                            lastRoll={item.lastRoll}
-                            isVideo={item.isVideo}
-                            videoNftUrl={item.videoNftUrl}
-                            assetId={item.assetId}
-                            joinedAccounts={item.joinedAccounts}
-                            route={item.route}
-                          />
+                          <NftCard {...item} />
                         </div>
                       );
                     })}
@@ -99,7 +84,7 @@ export async function getServerSideProps(context) {
             joinedAccounts: runningCampaigns?.accounts || [],
             assetId: result?.asset_id,
             contractAccount: runningCampaigns?.contract_account,
-            nftImgUrl: `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}`,
+            nftSrc: `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}`,
             videoNftUrl: `https://ipfs.io/ipfs/${response?.data?.data?.template?.immutable_data?.video}`,
             isVideo:
               `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}` == true
