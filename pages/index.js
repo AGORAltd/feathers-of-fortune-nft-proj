@@ -132,7 +132,7 @@ export async function getStaticProps() {
   const adminDb = startFirebaseAdmin();
 
   const responseFromPost = await axios.post(
-    `${WAX_PINK_END_POINT}/v1/chain/get_table_rows`,
+    `https://wax.pink.gg/v1/chain/get_table_rows`,
     {
       json: true,
       code: "fortunebirds",
@@ -153,7 +153,7 @@ export async function getStaticProps() {
             .hasChild(runningCampaigns?.asset_ids[0]) == false
         ) {
           const response = await axios.get(
-            `${ATOMIC_ASSETS_END_POINT}/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
+            `https://wax.api.atomicassets.io/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
           );
 
           const runningCampaign = {
@@ -163,10 +163,10 @@ export async function getStaticProps() {
             nftImgUrl: `${IPFS_URL}/${response?.data?.data?.data?.img}`,
             videoNftUrl: `${IPFS_URL}/${response?.data?.data?.template?.immutable_data?.video}`,
             isVideo:
-              `${IPFS_URL}/${response?.data?.data?.data?.img}` == true
+              `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}` == true
                 ? false
-                : `${IPFS_URL}/${response?.data?.data?.data?.video}` !=
-                  `${IPFS_URL}/undefined`
+                : `https://ipfs.io/ipfs/${response?.data?.data?.data?.video}` !=
+                  `https://ipfs.io/ipfs/undefined`
                 ? true
                 : false,
             campaignId: runningCampaigns?.id,
