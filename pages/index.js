@@ -106,14 +106,14 @@ export async function getServerSideProps(context) {
           onValue(
             ref(adminDb, `/campaigns/${campaignObj.route}`),
             (snapshot) => {
-              if (snapshot.exists() == false) {
-                set(
-                  ref(adminDb, `/campaigns/${campaignObj.route}`),
-                  campaignObj
-                );
-              } else {
-                null;
-              }
+              // if (snapshot.exists() == false) {
+              set(
+                ref(firebaseDb, `/campaigns/${campaignObj.route}`),
+                campaignObj
+              );
+              // } else {
+              // null;
+              // }
             },
             { onlyOnce: true }
           );
