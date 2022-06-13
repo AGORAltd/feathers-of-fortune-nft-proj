@@ -23,19 +23,6 @@ const Header = () => {
     setUserAccount(null);
     localStorage.setItem("userLoggedIn", false);
     setAnchorWalletSession(null);
-
-    // const logout = window.open(
-    //   "https://all-access.wax.io/logout",
-    //   "_blank",
-    //   "toolbar=0,location=0"
-    // );
-
-    // logout.resizeTo(2, 2);
-
-    // setTimeout(() => {
-    //   logout.close();
-    //   window.location.reload();
-    // }, 4500);
   };
 
   return (
