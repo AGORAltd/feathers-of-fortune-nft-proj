@@ -12,6 +12,7 @@ const Header = () => {
     setUserLoginProvider,
     anchorLink,
     setUserAccount,
+    setAnchorWalletSession,
   } = useContext(NftContext);
 
   const [userLoginPopup, setUserLoginPopup] = useState(false);
@@ -21,6 +22,7 @@ const Header = () => {
     anchorLink.clearSessions("PIXELCAMPAIGN");
     setUserAccount(null);
     localStorage.setItem("userLoggedIn", false);
+    setAnchorWalletSession(null);
 
     // const logout = window.open(
     //   "https://all-access.wax.io/logout",

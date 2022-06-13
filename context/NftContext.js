@@ -100,7 +100,7 @@ export function NftContextProvider({ children }) {
       code: "fortunebirds",
       scope: "fortunebirds",
       table: "campaigns",
-      limit: "100",
+      limit: "1000",
     };
 
     const responseFromPost = await axios.post(
@@ -406,6 +406,7 @@ export function NftContextProvider({ children }) {
   return (
     <NftContext.Provider
       value={{
+        setAnchorWalletSession,
         nftCardData,
         waxUserLogIn,
         userAccount,
