@@ -104,7 +104,7 @@ export async function getStaticProps(context) {
             (snapshot) => {
               if (snapshot.exists() == false) {
                 set(
-                  ref(firebaseDb, `/campaigns/${campaignObj.route}`),
+                  ref(adminDb, `/campaigns/${campaignObj.route}`),
                   campaignObj
                 );
               } else {
