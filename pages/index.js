@@ -54,7 +54,7 @@ export default function Home() {
   );
 }
 
-export async function getServerSideProps(context) {
+export async function getStaticProps(context) {
   const addCampaign = async () => {
     const firebaseDb = StartFirebase();
     const adminDb = startFirebaseAdmin();
@@ -123,6 +123,7 @@ export async function getServerSideProps(context) {
 
   addCampaign();
   return {
-    props: {}, // will be passed to the page component as props
+    props: {},
+    revalidate: 10,
   };
 }
