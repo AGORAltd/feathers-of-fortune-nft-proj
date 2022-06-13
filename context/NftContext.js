@@ -100,6 +100,7 @@ export function NftContextProvider({ children }) {
       code: "fortunebirds",
       scope: "fortunebirds",
       table: "campaigns",
+      limit: "100",
     };
 
     const responseFromPost = await axios.post(
