@@ -4,6 +4,7 @@ import { useContext } from "react";
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/components/NftCard";
 import AppLayout from "../components/layout/AppLayout";
+import { startFirebaseAdmin } from "../context/firebase-admin";
 import { StartFirebase } from "../context/firebase-config";
 import { NftContext } from "../context/NftContext";
 
@@ -71,6 +72,8 @@ export default function Home() {
 export async function getServerSideProps(context) {
   const addCampaign = async () => {
     const firebaseDb = StartFirebase();
+    const adminDb = startFirebaseAdmin();
+
     const dataToPost = {
       json: true,
       code: "fortunebirds",
@@ -116,11 +119,11 @@ export async function getServerSideProps(context) {
           };
 
           onValue(
-            ref(firebaseDb, `/campaigns/${campaignObj.route}`),
+            ref(adminDb, `/campaigns/${campaignObj.route}`),
             (snapshot) => {
               if (snapshot.exists() == false) {
                 set(
-                  ref(firebaseDb, `/campaigns/${campaignObj.route}`),
+                  ref(adminDb, `/campaigns/${campaignObj.route}`),
                   campaignObj
                 );
               } else {
