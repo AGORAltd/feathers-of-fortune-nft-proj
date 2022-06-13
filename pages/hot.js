@@ -4,11 +4,6 @@ import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/components/NftCard";
 import AppLayout from "../components/layout/AppLayout";
 import { NftContext } from "../context/NftContext";
-import { onValue, ref, set } from "firebase/database";
-import { useEffect, useState } from "react";
-import { StartFirebase } from "../context/firebase-config";
-import { startFirebaseAdmin } from "../context/firebase-admin";
-import axios from "axios";
 
 const EndingSoon = () => {
   const { isLoadingData, nftCardData, addMoreData, setAddMoreData } =

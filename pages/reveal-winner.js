@@ -1,11 +1,7 @@
-import axios from "axios";
-import { onValue, ref, set } from "firebase/database";
 import { useContext } from "react";
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/components/NftCard";
 import AppLayout from "../components/layout/AppLayout";
-import { startFirebaseAdmin } from "../context/firebase-admin";
-import { StartFirebase } from "../context/firebase-config";
 import { NftContext } from "../context/NftContext";
 
 const RevealWinner = () => {
