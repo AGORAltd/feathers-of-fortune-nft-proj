@@ -1,6 +1,6 @@
 import { getDatabase } from "firebase/database";
 import admin from "firebase-admin";
-import serviceAccount from "../secure.json";
+import serviceAccount from "./secure.json";
 import { initializeApp } from "firebase/app";
 
 export function startFirebaseAdmin() {
@@ -14,6 +14,6 @@ export function startFirebaseAdmin() {
       adminApp = initializeApp(configs, "adminDbApp");
     } catch (error) {}
   }
-  console.log(adminApp);
+
   return getDatabase(adminApp);
 }
