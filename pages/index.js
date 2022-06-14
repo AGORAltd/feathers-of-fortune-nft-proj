@@ -73,10 +73,14 @@ export async function getStaticProps() {
     try {
       responseFromPost.data?.rows.forEach((runningCampaigns, index) => {
         if (
-          runningCampaigns?.asset_ids?.length > 0 &&
-          snapshot
-            .child("campaigns")
-            .hasChild(runningCampaigns?.asset_ids[0] + index) == false
+          (runningCampaigns?.asset_ids?.length > 0 &&
+            snapshot
+              .child("campaigns")
+              .hasChild(runningCampaigns?.asset_ids[0] + index) == false) ||
+          (runningCampaigns?.asset_ids?.length > 0 &&
+            snapshot
+              .child("campaigns")
+              .hasChild(runningCampaigns?.asset_ids[0] + index - 1) == false)
         ) {
           axios
             .get(
