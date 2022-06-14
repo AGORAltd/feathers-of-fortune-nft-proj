@@ -14,6 +14,6 @@ export function startFirebaseAdmin() {
       adminApp = initializeApp(configs, "adminDbApp");
     } catch (error) {}
   }
-
+  console.log(adminApp);
   return getDatabase(adminApp);
 }
