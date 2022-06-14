@@ -63,45 +63,54 @@ export async function getStaticProps() {
     dataToPost
   );
 
-  responseFromPost.data?.rows.forEach((runningCampaigns, index) => {
-    axios
-      .get(
-        `https://wax.api.atomicassets.io/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
-      )
-      .then((response) => {
-        const result = response.data?.data;
-        const campaignObj = {
-          route: result?.asset_id + index,
-          joinedAccounts: runningCampaigns?.accounts || [],
-          assetId: result?.asset_id,
-          contractAccount: runningCampaigns?.contract_account,
-          nftSrc: `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}`,
-          videoNftUrl: `https://ipfs.io/ipfs/${response?.data?.data?.template?.immutable_data?.video}`,
-          isVideo:
-            `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}` == true
-              ? false
-              : `https://ipfs.io/ipfs/${response?.data?.data?.data?.video}` !=
-                `https://ipfs.io/ipfs/undefined`
-              ? true
-              : false,
-          campaignId: runningCampaigns?.id,
-          creator: runningCampaigns?.authorized_account,
-          entryCost: runningCampaigns?.entrycost,
-          totalEntriesStart: runningCampaigns?.accounts?.length || 0,
-          totalEntriesEnd: runningCampaigns?.max_users,
-          loopTimeSeconds: runningCampaigns?.loop_time_seconds,
-          lastRoll: runningCampaigns?.last_roll,
-          totalEntriesEnd: runningCampaigns?.max_users,
-        };
+  onValue(ref(adminDb), async (snapshot) => {
+    try {
+      responseFromPost.data?.rows.forEach((runningCampaigns, index) => {
+        if (
+          runningCampaigns?.asset_ids?.length > 0 &&
+          snapshot
+            .child("campaigns")
+            .hasChild(runningCampaigns?.asset_ids[0] + index) == false
+        ) {
+          axios
+            .get(
+              `https://wax.api.atomicassets.io/atomicassets/v1/assets/${runningCampaigns?.asset_ids[0]}`
+            )
+            .then((response) => {
+              const result = response.data?.data;
 
-        onValue(ref(adminDb, `/campaigns/${campaignObj.route}`), (snapshot) => {
-          if (snapshot.exists() == false) {
-            set(ref(adminDb, `/campaigns/${campaignObj.route}`), campaignObj);
-          } else {
-            null;
-          }
-        });
+              const campaignObj = {
+                route: result?.asset_id + index,
+                joinedAccounts: runningCampaigns?.accounts || [],
+                assetId: result?.asset_id,
+                contractAccount: runningCampaigns?.contract_account,
+                nftSrc: `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}`,
+                videoNftUrl: `https://ipfs.io/ipfs/${response?.data?.data?.template?.immutable_data?.video}`,
+                isVideo:
+                  `https://ipfs.io/ipfs/${response?.data?.data?.data?.img}` ==
+                  true
+                    ? false
+                    : `https://ipfs.io/ipfs/${response?.data?.data?.data?.video}` !=
+                      `https://ipfs.io/ipfs/undefined`
+                    ? true
+                    : false,
+                campaignId: runningCampaigns?.id,
+                creator: runningCampaigns?.authorized_account,
+                entryCost: runningCampaigns?.entrycost,
+                totalEntriesStart: runningCampaigns?.accounts?.length || 0,
+                totalEntriesEnd: runningCampaigns?.max_users,
+                loopTimeSeconds: runningCampaigns?.loop_time_seconds,
+                lastRoll: runningCampaigns?.last_roll,
+                totalEntriesEnd: runningCampaigns?.max_users,
+              };
+
+              set(ref(adminDb, `/campaigns/${campaignObj.route}`), campaignObj);
+            });
+        }
       });
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   return {
