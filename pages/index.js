@@ -55,10 +55,9 @@ export default function Home() {
 }
 
 export async function getStaticProps(context) {
-  const addCampaign = async () => {
-    const firebaseDb = StartFirebase();
-    const adminDb = startFirebaseAdmin();
+  const adminDb = startFirebaseAdmin();
 
+  const addCampaign = async () => {
     const dataToPost = {
       json: true,
       code: "fortunebirds",
