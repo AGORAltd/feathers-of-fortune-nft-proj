@@ -76,10 +76,7 @@ export async function getStaticProps() {
           runningCampaigns?.asset_ids?.length > 0 &&
           snapshot
             .child("campaigns")
-            .hasChild(runningCampaigns?.asset_ids[0] + index) == false &&
-          snapshot
-            .child("campaigns")
-            .hasChild(runningCampaigns?.asset_ids[0] + index - 1) == false
+            .hasChild(runningCampaigns?.asset_ids[0] + index) == false
         ) {
           axios
             .get(
