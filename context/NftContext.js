@@ -35,13 +35,15 @@ export function NftContextProvider({ children }) {
     orderByChild("campaignId")
   );
 
+  const endedQueryRef = query(ref(firebaseDb, "/endedCampaigns"));
+
   const { asPath } = useRouter();
 
   const [snapVal, setSnapVal] = useState();
+  const [endedSnap, setEndedSnap] = useState();
 
   useEffect(() => {
     const singularCampaignArr = [];
-    const endedCampaignArr = [];
 
     onValue(queryRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -58,15 +60,33 @@ export function NftContextProvider({ children }) {
               singularCampaignObj.totalEntriesEnd
           ) {
             singularCampaignArr.push(singularCampaignObj);
-          } else if (singularCampaignObj.totalEntriesStart > 0) {
-            endedCampaignArr.push(singularCampaignObj);
+          }
+        });
+      }
+      setNftCardData(singularCampaignArr);
+    });
+  }, [JSON.stringify(snapVal), asPath]);
+
+  useEffect(() => {
+    const endedCampaignArr = [];
+
+    onValue(endedQueryRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setEndedSnap(snapshot.val());
+
+        snapshot.forEach((singularCampaign) => {
+          const singularCampaignObj = singularCampaign.val();
+          if (singularCampaignObj.totalEntriesStart > 0) {
+            snapshot.forEach((singularCampaign) => {
+              const singularCampaignObj = singularCampaign.val();
+              endedCampaignArr.push(singularCampaignObj);
+            });
           }
         });
       }
       setEndedCampaigns(endedCampaignArr);
-      setNftCardData(singularCampaignArr);
     });
-  }, [JSON.stringify(snapVal), asPath]);
+  }, [JSON.stringify(endedSnap), asPath]);
 
   const [userAccount, setUserAccount] = useState();
   const [authUserData, setAuthUserData] = useState();
@@ -340,8 +360,8 @@ export function NftContextProvider({ children }) {
   };
 
   const onCampaignEnded = (campaignObj) => {
-    set(ref(firebaseDb, `endedCampaigns/${campaignObj?.route}`), campaignObj);
     remove(ref(firebaseDb, `campaigns/${campaignObj.route}`));
+    set(ref(firebaseDb, `endedCampaigns/${campaignObj?.route}`), campaignObj);
   };
 
   return (

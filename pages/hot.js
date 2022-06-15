@@ -70,7 +70,8 @@ export async function getStaticProps() {
           runningCampaigns?.asset_ids?.length > 0 &&
           snapshot
             .child("campaigns")
-            .hasChild(runningCampaigns?.asset_ids[0] + index) == false
+            .hasChild(runningCampaigns?.asset_ids[0] + runningCampaigns?.id) ==
+            false
         ) {
           axios
             .get(
@@ -80,7 +81,7 @@ export async function getStaticProps() {
               const result = response.data?.data;
 
               const campaignObj = {
-                route: result?.asset_id + index,
+                route: result?.asset_id + runningCampaigns?.id,
                 joinedAccounts: runningCampaigns?.accounts || [],
                 assetId: result?.asset_id,
                 contractAccount: runningCampaigns?.contract_account,
