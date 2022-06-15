@@ -18,6 +18,7 @@ import {
   set,
   query,
   orderByChild,
+  remove,
 } from "firebase/database";
 
 const wax = new waxjs.WaxJS({
@@ -338,6 +339,11 @@ export function NftContextProvider({ children }) {
     }
   };
 
+  const onCampaignEnded = (campaignObj) => {
+    set(ref(firebaseDb, `endedCampaigns/${campaignObj?.route}`), campaignObj);
+    remove(ref(firebaseDb, `campaigns/${campaignObj.route}`));
+  };
+
   return (
     <NftContext.Provider
       value={{
@@ -367,6 +373,7 @@ export function NftContextProvider({ children }) {
         addMoreData,
         setAddMoreData,
         setUserAccount,
+        onCampaignEnded,
       }}
     >
       {children}

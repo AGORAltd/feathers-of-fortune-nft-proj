@@ -28,7 +28,7 @@ const New = () => {
                       .map((item, index) => {
                         return (
                           <div key={index} className="grid-cols-4">
-                            <NftCard {...item} />
+                            <NftCard campaignObj={item} {...item} />
                           </div>
                         );
                       })

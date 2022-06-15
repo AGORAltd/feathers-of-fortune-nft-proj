@@ -25,6 +25,7 @@ const NftCard = ({
   assetId,
   joinedAccounts,
   route,
+  campaignObj,
 }) => {
   const {
     joinCampaign,
@@ -33,6 +34,7 @@ const NftCard = ({
     transactionId,
     setIsTransactionSussessful,
     userAccount,
+    onCampaignEnded,
   } = useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
@@ -61,11 +63,6 @@ const NftCard = ({
 
   useEffect(() => {
     updateTimeToShow(finalUTCEpochTimeInMilliSec);
-    // if (totalEntriesEnd != totalEntriesStart) {
-    //   updateTimeToShow(finalUTCEpochTimeInMilliSec);
-    // } else {
-    //   setTimeToShow("Reveal Winner");
-    // }
   }, []);
 
   const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
@@ -93,6 +90,12 @@ const NftCard = ({
   };
   const finalUTCEpochTimeInMilliSec =
     Date.parse(`${lastRoll}Z`) + loopTimeSeconds * 1000;
+
+  useEffect(() => {
+    if (timeToShow == "Winners Circle") {
+      onCampaignEnded(campaignObj);
+    }
+  }, [timeToShow]);
 
   return (
     <>
