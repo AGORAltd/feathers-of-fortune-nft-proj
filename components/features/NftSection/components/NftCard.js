@@ -41,13 +41,9 @@ const NftCard = ({
   const [showTransactionMessage, setShowTransactionMessage] = useState(false);
   const [showNotLoggedInMsg, setShowNotLoggedInMsg] = useState(false);
   const [showWinner, setShowWinner] = useState(false);
-
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-
   const [timeToShow, setTimeToShow] = useState("");
-
   const [openModal, setOpenModal] = useState(true);
-
   const [timeCountDown, setTimeCountDown] = useState(15);
 
   useEffect(() => {
@@ -64,6 +60,12 @@ const NftCard = ({
   useEffect(() => {
     updateTimeToShow(finalUTCEpochTimeInMilliSec);
   }, []);
+
+  useEffect(() => {
+    if (timeToShow == "Winners Circle") {
+      onCampaignEnded(campaignObj);
+    }
+  }, [timeToShow]);
 
   const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
     let interval = setInterval(() => {
@@ -90,12 +92,6 @@ const NftCard = ({
   };
   const finalUTCEpochTimeInMilliSec =
     Date.parse(`${lastRoll}Z`) + loopTimeSeconds * 1000;
-
-  useEffect(() => {
-    if (timeToShow == "Winners Circle") {
-      onCampaignEnded(campaignObj);
-    }
-  }, [timeToShow]);
 
   return (
     <>
