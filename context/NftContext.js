@@ -27,20 +27,27 @@ const wax = new waxjs.WaxJS({
 });
 
 export function NftContextProvider({ children }) {
+  useEffect(() => {
+    tryAutoLoginBrowser();
+  }, []);
+
   const firebaseDb = StartFirebase();
   const [nftCardData, setNftCardData] = useState([]);
   const [endedCampaigns, setEndedCampaigns] = useState();
+
   const queryRef = query(
     ref(firebaseDb, "/campaigns"),
     orderByChild("campaignId")
   );
 
-  const endedQueryRef = query(ref(firebaseDb, "/endedCampaigns"));
+  const endedQueryRef = query(
+    ref(firebaseDb, "/endedCampaigns"),
+    orderByChild("time")
+  );
 
   const { asPath } = useRouter();
 
   const [snapVal, setSnapVal] = useState();
-  const [endedSnap, setEndedSnap] = useState();
 
   useEffect(() => {
     const singularCampaignArr = [];
@@ -60,6 +67,13 @@ export function NftContextProvider({ children }) {
               singularCampaignObj.totalEntriesEnd
           ) {
             singularCampaignArr.push(singularCampaignObj);
+          } else if (singularCampaignObj.totalEntriesStart > 0) {
+            remove(ref(firebaseDb, `campaigns/${singularCampaignObj.route}`));
+
+            set(
+              ref(firebaseDb, `endedCampaigns/${singularCampaignObj?.route}`),
+              { ...singularCampaignObj, time: new Date(Date.now()).getTime() }
+            );
           }
         });
       }
@@ -70,23 +84,19 @@ export function NftContextProvider({ children }) {
   useEffect(() => {
     const endedCampaignArr = [];
 
-    onValue(endedQueryRef, (snapshot) => {
-      if (snapshot.exists()) {
-        setEndedSnap(snapshot.val());
-
-        snapshot.forEach((singularCampaign) => {
-          const singularCampaignObj = singularCampaign.val();
-          if (singularCampaignObj.totalEntriesStart > 0) {
-            snapshot.forEach((singularCampaign) => {
-              const singularCampaignObj = singularCampaign.val();
-              endedCampaignArr.push(singularCampaignObj);
-            });
-          }
-        });
-      }
-      setEndedCampaigns(endedCampaignArr);
-    });
-  }, [JSON.stringify(endedSnap), asPath]);
+    onValue(
+      endedQueryRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          snapshot.forEach((singularCampaignObj) => {
+            endedCampaignArr.push(singularCampaignObj.val());
+          });
+        }
+        setEndedCampaigns(endedCampaignArr);
+      },
+      { onlyOnce: true }
+    );
+  }, []);
 
   const [userAccount, setUserAccount] = useState();
   const [authUserData, setAuthUserData] = useState();
@@ -115,28 +125,26 @@ export function NftContextProvider({ children }) {
     chains: [{ chainId: chainId, nodeUrl: `https://${nodeUrl}` }],
   });
 
-  if (typeof window != "undefined") {
-    window.onload = async () => {
-      let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
-      let sessionList = await anchorLink.listSessions(dapp);
-      let wallet_session;
-      if (sessionList && sessionList.length > 0) {
-        wallet_session = await anchorLink.restoreSession(dapp);
-        setUserAccount(String(wallet_session?.auth)?.split("@")[0]);
-        getAuthUsers();
-        setAnchorWalletSession(wallet_session);
-        setUserLoginProvider("anchor");
-      } else if (
-        isAutoLoginAvailable &&
-        localStorage.getItem("userLoggedIn") != "false"
-      ) {
-        setUserAccount(wax.userAccount);
-        getAuthUsers();
-        setUserLoginProvider("wax");
-        localStorage.setItem("userLoggedIn", true);
-      }
-    };
-  }
+  const tryAutoLoginBrowser = async () => {
+    let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
+    let sessionList = await anchorLink.listSessions(dapp);
+    let wallet_session;
+    if (sessionList && sessionList.length > 0) {
+      wallet_session = await anchorLink.restoreSession(dapp);
+      setUserAccount(String(wallet_session?.auth)?.split("@")[0]);
+      getAuthUsers();
+      setAnchorWalletSession(wallet_session);
+      setUserLoginProvider("anchor");
+    } else if (
+      isAutoLoginAvailable &&
+      localStorage.getItem("userLoggedIn") != "false"
+    ) {
+      setUserAccount(wax.userAccount);
+      getAuthUsers();
+      setUserLoginProvider("wax");
+      localStorage.setItem("userLoggedIn", true);
+    }
+  };
 
   useEffect(() => {
     checkIfAuthorizeduser();
@@ -359,10 +367,9 @@ export function NftContextProvider({ children }) {
     }
   };
 
-  const onCampaignEnded = (campaignObj) => {
-    remove(ref(firebaseDb, `campaigns/${campaignObj.route}`));
-    set(ref(firebaseDb, `endedCampaigns/${campaignObj?.route}`), campaignObj);
-  };
+  // const onCampaignEnded = (campaignObj) => {
+  //
+  // };
 
   return (
     <NftContext.Provider
@@ -393,7 +400,6 @@ export function NftContextProvider({ children }) {
         addMoreData,
         setAddMoreData,
         setUserAccount,
-        onCampaignEnded,
       }}
     >
       {children}

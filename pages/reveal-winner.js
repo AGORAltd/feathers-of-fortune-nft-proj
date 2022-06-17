@@ -25,7 +25,7 @@ const RevealWinner = () => {
                       .map((item, index) => {
                         return (
                           <div key={index} className="grid-cols-4">
-                            <NftCard campaignObj={item} {...item} />
+                            <NftCard {...item} />
                           </div>
                         );
                       })

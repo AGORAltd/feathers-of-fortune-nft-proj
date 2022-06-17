@@ -1,5 +1,5 @@
 import axios from "axios";
-import { onValue, ref, set } from "firebase/database";
+import { get, onValue, ref, set } from "firebase/database";
 import { useContext } from "react";
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/components/NftCard";
@@ -40,7 +40,7 @@ export default function Home() {
                     .map((item, index) => {
                       return (
                         <div key={index} className="grid-cols-4 ">
-                          <NftCard campaignObj={item} {...item} />
+                          <NftCard {...item} />
                         </div>
                       );
                     })}
@@ -61,7 +61,7 @@ export async function getStaticProps() {
     code: "fortunebirds",
     scope: "fortunebirds",
     table: "campaigns",
-    limit: "1000",
+    limit: "100",
   };
 
   const responseFromPost = await axios.post(
@@ -69,7 +69,7 @@ export async function getStaticProps() {
     dataToPost
   );
 
-  onValue(ref(adminDb), async (snapshot) => {
+  get(ref(adminDb), async (snapshot) => {
     try {
       responseFromPost.data?.rows.forEach((runningCampaigns, index) => {
         if (
@@ -122,6 +122,6 @@ export async function getStaticProps() {
 
   return {
     props: {},
-    revalidate: 10,
+    revalidate: 5,
   };
 }

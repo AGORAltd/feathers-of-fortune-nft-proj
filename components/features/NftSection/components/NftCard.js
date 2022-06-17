@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import { WAX_PINK_END_POINT } from "../../../constants/constants";
 import axios from "axios";
 import { imgSrc } from "../../imgSrc";
-import { useRouter } from "next/router";
 
 const NftCard = ({
   nftSrc,
@@ -25,7 +24,6 @@ const NftCard = ({
   assetId,
   joinedAccounts,
   route,
-  campaignObj,
 }) => {
   const {
     joinCampaign,
@@ -61,12 +59,6 @@ const NftCard = ({
     updateTimeToShow(finalUTCEpochTimeInMilliSec);
   }, []);
 
-  useEffect(() => {
-    if (timeToShow == "Winners Circle") {
-      onCampaignEnded(campaignObj);
-    }
-  }, [timeToShow]);
-
   const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
     let interval = setInterval(() => {
       const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
@@ -85,7 +77,7 @@ const NftCard = ({
       );
 
       if (distance <= 0 || totalEntriesEnd == totalEntriesStart) {
-        clearInterval(interval);
+        clearInterval(interval);   
         setTimeToShow("Winners Circle");
       }
     }, 1000);
