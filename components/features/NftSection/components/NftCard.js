@@ -77,8 +77,8 @@ const NftCard = ({
       );
 
       if (distance <= 0 || totalEntriesEnd == totalEntriesStart) {
-        clearInterval(interval);   
-        setTimeToShow("Winners Circle");
+        clearInterval(interval);
+        setTimeToShow("Reveal Winner");
       }
     }, 1000);
   };
@@ -267,7 +267,7 @@ const NftCard = ({
 
             <button
               className={`${
-                timeToShow == "Winners Circle"
+                timeToShow == "Reveal Winner"
                   ? "pointer-events-auto"
                   : "pointer-events-none"
               }`}
@@ -303,12 +303,12 @@ const NftCard = ({
               userAccount ? setShowAlert(true) : setShowNotLoggedInMsg(true);
             }}
             className={`my-2.5 ${
-              timeToShow == "Winners Circle"
+              timeToShow == "Reveal Winner"
                 ? "bg-zinc-500 py-2 px-2 rounded-md text-white pointer-events-none"
                 : "join_campaign_now_btn"
             }`}
           >
-            {timeToShow == "Winners Circle" ? "ENDED" : "JOIN NOW"}
+            {timeToShow == "Reveal Winner" ? "ENDED" : "JOIN NOW"}
           </button>
           <div className="entrants_container cursor-pointer">
             <p className="entrants_counter font-semibold py-2.5">Entrants</p>

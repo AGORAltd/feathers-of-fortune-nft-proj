@@ -126,12 +126,18 @@ export function NftContextProvider({ children }) {
   });
 
   const tryAutoLoginBrowser = async () => {
+    let cookies = document.cookie;
     let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
     let sessionList = await anchorLink.listSessions(dapp);
     let wallet_session;
     if (sessionList && sessionList.length > 0) {
       wallet_session = await anchorLink.restoreSession(dapp);
-      setUserAccount(String(wallet_session?.auth)?.split("@")[0]);
+
+      setUserAccount(
+        wallet_session
+          ? String(wallet_session?.auth)?.split("@")[0]
+          : cookies.split("=")[1]
+      );
       getAuthUsers();
       setAnchorWalletSession(wallet_session);
       setUserLoginProvider("anchor");
@@ -139,7 +145,7 @@ export function NftContextProvider({ children }) {
       isAutoLoginAvailable &&
       localStorage.getItem("userLoggedIn") != "false"
     ) {
-      setUserAccount(wax.userAccount);
+      setUserAccount(wax.userAccount ? wax.userAccount : cookies.split("=")[1]);
       getAuthUsers();
       setUserLoginProvider("wax");
       localStorage.setItem("userLoggedIn", true);
@@ -176,6 +182,9 @@ export function NftContextProvider({ children }) {
         setAnchorWalletSession(wallet_session);
       }
       setUserAccount(String(wallet_session.auth).split("@")[0]);
+      document.cookie = `username= ${
+        String(wallet_session.auth).split("@")[0]
+      }; expires=Thu, 18 Dec 2023 12:00:00 UTC`;
       getAuthUsers();
     } catch (error) {
       console.log(error);
@@ -186,6 +195,7 @@ export function NftContextProvider({ children }) {
     try {
       let userAccountFromLogin = await wax.login();
       setUserAccount(userAccountFromLogin);
+      document.cookie = `username= ${userAccountFromLogin}; expires=Thu, 18 Dec 4023 12:00:00 UTC`;
       getAuthUsers();
       localStorage.setItem("userLoggedIn", true);
     } catch (err) {
@@ -366,10 +376,6 @@ export function NftContextProvider({ children }) {
       }
     }
   };
-
-  // const onCampaignEnded = (campaignObj) => {
-  //
-  // };
 
   return (
     <NftContext.Provider

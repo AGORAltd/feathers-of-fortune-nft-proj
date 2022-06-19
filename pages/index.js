@@ -1,5 +1,5 @@
 import axios from "axios";
-import { get, onValue, ref, set } from "firebase/database";
+import { child, get, onValue, ref, set } from "firebase/database";
 import { useContext } from "react";
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/components/NftCard";
@@ -69,7 +69,7 @@ export async function getStaticProps() {
     dataToPost
   );
 
-  get(ref(adminDb), async (snapshot) => {
+  get(child(ref(adminDb), "/campaigns")).then((snapshot) => {
     try {
       responseFromPost.data?.rows.forEach((runningCampaigns, index) => {
         if (
@@ -119,7 +119,6 @@ export async function getStaticProps() {
       console.log(error);
     }
   });
-
   return {
     props: {},
     revalidate: 5,
