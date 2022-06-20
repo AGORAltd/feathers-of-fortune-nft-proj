@@ -59,7 +59,12 @@ const AppLayout = ({ children, showLandingPageBanner = true }) => {
           </div>
         </div>
       </footer>
-      <a id="mt_boxsocial" className="flex text-white" target="_blank" href="#">
+      <a
+        id="mt_boxsocial"
+        className="hidden sm:flex text-white"
+        target="_blank"
+        href="#"
+      >
         <img className="mt-social" src="/media/img/twitter_icon.svg" />
         <span>Twitter </span>
       </a>

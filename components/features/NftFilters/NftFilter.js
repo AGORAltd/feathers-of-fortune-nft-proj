@@ -2,7 +2,6 @@ import { CreateCampaignBtn } from "../CreateCampaignsForm/CreateCampaignBtn";
 import { useRouter } from "next/router";
 
 const NftFilter = () => {
-  const router = useRouter();
   const { pathname } = useRouter();
   const sendToRouteOnClick = (routeName) => {
     window.location.pathname = `/${routeName}`;

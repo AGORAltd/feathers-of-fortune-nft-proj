@@ -13,6 +13,7 @@ const Header = () => {
     anchorLink,
     setUserAccount,
     setAnchorWalletSession,
+    setIsAuthorizedUser,
   } = useContext(NftContext);
 
   const [userLoginPopup, setUserLoginPopup] = useState(false);
@@ -23,6 +24,7 @@ const Header = () => {
     setUserAccount(null);
     localStorage.setItem("userLoggedIn", false);
     setAnchorWalletSession(null);
+    setIsAuthorizedUser(false);
   };
 
   return (
@@ -141,19 +143,27 @@ const Header = () => {
           <div style={{ background: "#1d2228" }} className="py-14">
             <div className="menu_items items-center justify-between flex-col mx-auto">
               <div className="flex flex-col text-center">
-                <a className="cursor-pointer my-2">ABOUT</a>
-                <a className="cursor-pointer my-2">FAQ</a>
-                <a className="cursor-pointer my-2">TERMS AND CONDITIONS</a>
+                <a href="/about" className="cursor-pointer my-2">
+                  ABOUT
+                </a>
+                <a href="/faq" className="cursor-pointer my-2">
+                  FAQ
+                </a>
+                <a href="/terms-and-condition" className="cursor-pointer my-2">
+                  TERMS AND CONDITIONS
+                </a>
               </div>
               {!userAccount ? (
-                <button
-                  className="login_button"
-                  onClick={() => {
-                    setUserLoginPopup(true);
-                  }}
-                >
-                  LOGIN
-                </button>
+                <div className="w-full flex items-center justify-center">
+                  <button
+                    className="login_button"
+                    onClick={() => {
+                      setUserLoginPopup(true);
+                    }}
+                  >
+                    LOGIN
+                  </button>
+                </div>
               ) : (
                 <div className="flex-col text-center items-center flex">
                   <div className="user_account_name my-2 mx-4">

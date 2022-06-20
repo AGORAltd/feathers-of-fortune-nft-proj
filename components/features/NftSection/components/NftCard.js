@@ -32,7 +32,11 @@ const NftCard = ({
     transactionId,
     setIsTransactionSussessful,
     userAccount,
-    onCampaignEnded,
+    userAccountLogin,
+    setUserLoginProvider,
+    anchorLink,
+    setUserAccount,
+    setAnchorWalletSession,
   } = useContext(NftContext);
 
   const [showAlert, setShowAlert] = useState(false);
@@ -43,6 +47,7 @@ const NftCard = ({
   const [timeToShow, setTimeToShow] = useState("");
   const [openModal, setOpenModal] = useState(true);
   const [timeCountDown, setTimeCountDown] = useState(15);
+  const [userLoginPopup, setUserLoginPopup] = useState(false);
 
   useEffect(() => {
     if (transactionId) {
@@ -88,20 +93,40 @@ const NftCard = ({
   return (
     <>
       <SweetAlert
-        style={{ background: "#14181d", color: "white" }}
-        title="Please Login to join the campaign"
-        show={showNotLoggedInMsg}
+        title={"Connect Wallet"}
+        show={userLoginPopup}
         showConfirm={false}
         onConfirm={() => {}}
+        style={{ color: "white", background: "#1d2228" }}
+        onCancel={() => {
+          setUserLoginPopup(false);
+        }}
       >
-        <button
-          className="py-3"
-          onClick={() => {
-            setShowNotLoggedInMsg(false);
-          }}
-        >
-          OK
-        </button>
+        <div className="flex flex-col">
+          <button
+            style={{ background: "#14181d" }}
+            className="flex items-center justify-between px-3 py-1 my-4"
+            onClick={() => {
+              setUserLoginProvider("wax");
+              setUserLoginPopup(false);
+              userAccountLogin();
+            }}
+          >
+            <p>Wax Cloud Wallet </p>
+            <img width={70} src="/media/waxLogoPng.png" />
+          </button>
+          <button
+            style={{ background: "#14181d" }}
+            onClick={() => {
+              setUserLoginProvider("anchor");
+              setUserLoginPopup(false);
+              userAccountLogin();
+            }}
+            className="flex items-center justify-between px-3 py-1"
+          >
+            <p>Anchor </p> <img width={40} src="/media/anchor_logo.svg" />
+          </button>
+        </div>
       </SweetAlert>
 
       <SweetAlert
@@ -300,7 +325,7 @@ const NftCard = ({
 
           <button
             onClick={() => {
-              userAccount ? setShowAlert(true) : setShowNotLoggedInMsg(true);
+              userAccount ? setShowAlert(true) : setUserLoginPopup(true);
             }}
             className={`my-2.5 ${
               timeToShow == "Reveal Winner"
