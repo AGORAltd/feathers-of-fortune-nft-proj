@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { useMemo } from "react";
 import { useContext } from "react";
 import { NftContext } from "../../../../context/NftContext";
 import { useState } from "react";
@@ -60,10 +60,6 @@ const NftCard = ({
     }
   }, [transactionId]);
 
-  useEffect(() => {
-    updateTimeToShow(finalUTCEpochTimeInMilliSec);
-  }, []);
-
   const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
     let interval = setInterval(() => {
       const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
@@ -89,6 +85,8 @@ const NftCard = ({
   };
   const finalUTCEpochTimeInMilliSec =
     Date.parse(`${lastRoll}Z`) + loopTimeSeconds * 1000;
+
+  useMemo(() => updateTimeToShow(finalUTCEpochTimeInMilliSec), [timeToShow]);
 
   return (
     <>

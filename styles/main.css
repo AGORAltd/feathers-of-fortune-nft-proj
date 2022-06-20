@@ -25,17 +25,6 @@
   background: #14181d;
 }
 
-.copyright > p {
-  margin-bottom: 0;
-  color: #d4c8c8;
-  text-align: center;
-  font-weight: 600;
-}
-
-.copyright a {
-  color: #8091b7 !important;
-}
-
 .mt-social {
   margin-right: 8px;
   font-size: 1.36em;
@@ -49,6 +38,7 @@
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
+  justify-content: center;
   align-content: center;
 }
 

@@ -50,6 +50,7 @@
 .entrants_container:hover .entrants_indicator {
   display: block;
   background-color: #0d3e6f;
+  z-index: 100000;
 }
 
 .thanks_for_joining_text {

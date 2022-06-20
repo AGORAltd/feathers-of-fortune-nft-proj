@@ -23,7 +23,7 @@ import {
 
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
-  tryAutoLogin: false,
+  tryAutoLogin: true,
 });
 
 export function NftContextProvider({ children }) {
@@ -127,6 +127,7 @@ export function NftContextProvider({ children }) {
 
   const tryAutoLoginBrowser = async () => {
     let cookies = document.cookie;
+
     let isAutoLoginAvailable = await wax.isAutoLoginAvailable();
     let sessionList = await anchorLink.listSessions(dapp);
     let wallet_session;
