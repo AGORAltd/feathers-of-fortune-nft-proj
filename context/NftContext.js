@@ -48,6 +48,7 @@ export function NftContextProvider({ children }) {
   const { asPath } = useRouter();
 
   const [snapVal, setSnapVal] = useState();
+  const [endedSnapVal, setEndedSnapVal] = useState();
 
   useEffect(() => {
     const singularCampaignArr = [];
@@ -84,19 +85,16 @@ export function NftContextProvider({ children }) {
   useEffect(() => {
     const endedCampaignArr = [];
 
-    onValue(
-      endedQueryRef,
-      (snapshot) => {
-        if (snapshot.exists()) {
-          snapshot.forEach((singularCampaignObj) => {
-            endedCampaignArr.push(singularCampaignObj.val());
-          });
-        }
-        setEndedCampaigns(endedCampaignArr);
-      },
-      { onlyOnce: true }
-    );
-  }, []);
+    onValue(endedQueryRef, (snapshot) => {
+      setEndedSnapVal(snapshot.val());
+      if (snapshot.exists()) {
+        snapshot.forEach((singularCampaignObj) => {
+          endedCampaignArr.push(singularCampaignObj.val());
+        });
+      }
+      setEndedCampaigns(endedCampaignArr);
+    });
+  }, [JSON.stringify(endedSnapVal)]);
 
   const [userAccount, setUserAccount] = useState();
   const [authUserData, setAuthUserData] = useState();
