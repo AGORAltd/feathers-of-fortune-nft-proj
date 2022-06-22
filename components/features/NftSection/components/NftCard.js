@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { WAX_PINK_END_POINT } from "../../../constants/constants";
 import axios from "axios";
 import { imgSrc } from "../../imgSrc";
+import { ref, remove } from "firebase/database";
+import { StartFirebase } from "../../../../context/firebase-config";
 
 const NftCard = ({
   nftSrc,
@@ -34,10 +36,14 @@ const NftCard = ({
     userAccount,
     userAccountLogin,
     setUserLoginProvider,
-    anchorLink,
-    setUserAccount,
-    setAnchorWalletSession,
   } = useContext(NftContext);
+  const firebaseDb = StartFirebase();
+  const finalUTCEpochTimeInMilliSec =
+    Date.parse(`${lastRoll}Z`) + loopTimeSeconds * 1000;
+
+  useEffect(() => {
+    updateTimeToShow(finalUTCEpochTimeInMilliSec);
+  }, []);
 
   const [showAlert, setShowAlert] = useState(false);
   const [showTransactionMessage, setShowTransactionMessage] = useState(false);
@@ -64,8 +70,6 @@ const NftCard = ({
     let interval = setInterval(() => {
       const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
       let distance = finalUTCEpochTimeInMilliSec - nowUTCEpochTimeInMilliSec;
-
-      if (distance < 0) distance = 0;
       let hours = Math.floor(
         (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
       );
@@ -77,16 +81,12 @@ const NftCard = ({
         }`
       );
 
-      if (distance <= 0 || totalEntriesEnd == totalEntriesStart) {
+      if (distance <= 0) {
         clearInterval(interval);
         setTimeToShow("Reveal Winner");
       }
     }, 1000);
   };
-  const finalUTCEpochTimeInMilliSec =
-    Date.parse(`${lastRoll}Z`) + loopTimeSeconds * 1000;
-
-  useMemo(() => updateTimeToShow(finalUTCEpochTimeInMilliSec), [timeToShow]);
 
   return (
     <>
@@ -246,7 +246,7 @@ const NftCard = ({
         ""
       )}
 
-      <div className="rounded nft_card_container">
+      <div className={`rounded nft_card_container`}>
         <a
           href={`https://wax.atomichub.io/explorer/asset/${assetId}`}
           target="_blank"

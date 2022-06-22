@@ -34,6 +34,9 @@ export function NftContextProvider({ children }) {
   const firebaseDb = StartFirebase();
   const [nftCardData, setNftCardData] = useState([]);
   const [endedCampaigns, setEndedCampaigns] = useState();
+  const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
+
+  const [timeToShow, setTimeToShow] = useState("");
 
   const queryRef = query(
     ref(firebaseDb, "/campaigns"),
@@ -45,8 +48,6 @@ export function NftContextProvider({ children }) {
     orderByChild("time")
   );
 
-  const { asPath } = useRouter();
-
   const [snapVal, setSnapVal] = useState();
   const [endedSnapVal, setEndedSnapVal] = useState();
 
@@ -54,11 +55,11 @@ export function NftContextProvider({ children }) {
     const singularCampaignArr = [];
 
     onValue(queryRef, (snapshot) => {
+      setSnapVal(snapshot.val());
       if (snapshot.exists()) {
-        setSnapVal(snapshot.val());
-
         snapshot.forEach((singularCampaign) => {
           const singularCampaignObj = singularCampaign.val();
+
           if (
             Date.parse(`${singularCampaignObj.lastRoll}Z`) +
               singularCampaignObj.loopTimeSeconds * 1000 -
@@ -70,7 +71,6 @@ export function NftContextProvider({ children }) {
             singularCampaignArr.push(singularCampaignObj);
           } else if (singularCampaignObj.totalEntriesStart > 0) {
             remove(ref(firebaseDb, `campaigns/${singularCampaignObj.route}`));
-
             set(
               ref(firebaseDb, `endedCampaigns/${singularCampaignObj?.route}`),
               { ...singularCampaignObj, time: new Date(Date.now()).getTime() }
@@ -80,7 +80,7 @@ export function NftContextProvider({ children }) {
       }
       setNftCardData(singularCampaignArr);
     });
-  }, [JSON.stringify(snapVal), asPath]);
+  }, [JSON.stringify(snapVal)]);
 
   useEffect(() => {
     const endedCampaignArr = [];
@@ -115,7 +115,6 @@ export function NftContextProvider({ children }) {
   let nodeUrl = "wax.pink.gg";
   const dapp = "PIXELCAMPAIGN";
   const anchorTransport = new AnchorLinkBrowserTransport();
-  const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
 
   const anchorLink = new AnchorLink({
     transport: anchorTransport,
@@ -381,6 +380,7 @@ export function NftContextProvider({ children }) {
       value={{
         setAnchorWalletSession,
         nftCardData,
+        snapVal,
         waxUserLogIn,
         userAccount,
         setUserAccount,
@@ -405,6 +405,7 @@ export function NftContextProvider({ children }) {
         addMoreData,
         setAddMoreData,
         setUserAccount,
+        timeToShow,
       }}
     >
       {children}
