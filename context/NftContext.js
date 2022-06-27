@@ -36,8 +36,6 @@ export function NftContextProvider({ children }) {
   const [endedCampaigns, setEndedCampaigns] = useState();
   const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
 
-  const [timeToShow, setTimeToShow] = useState("");
-
   const queryRef = query(
     ref(firebaseDb, "/campaigns"),
     orderByChild("campaignId")
@@ -53,7 +51,6 @@ export function NftContextProvider({ children }) {
 
   useEffect(() => {
     const singularCampaignArr = [];
-
     onValue(queryRef, (snapshot) => {
       setSnapVal(snapshot.val());
       if (snapshot.exists()) {
@@ -76,6 +73,28 @@ export function NftContextProvider({ children }) {
               { ...singularCampaignObj, time: new Date(Date.now()).getTime() }
             );
           }
+
+          let interval = setInterval(() => {
+            const distance =
+              Date.parse(`${singularCampaignObj.lastRoll}Z`) +
+              singularCampaignObj.loopTimeSeconds * 1000 -
+              new Date(Date.now()).getTime();
+
+            if (distance <= 0 && singularCampaignObj.totalEntriesStart <= 0) {
+              remove(ref(firebaseDb, `campaigns/${singularCampaignObj.route}`));
+              clearInterval(interval);
+            } else if (
+              distance <= 0 &&
+              singularCampaignObj.totalEntriesStart > 0
+            ) {
+              remove(ref(firebaseDb, `campaigns/${singularCampaignObj.route}`));
+              clearInterval(interval);
+              set(
+                ref(firebaseDb, `endedCampaigns/${singularCampaignObj?.route}`),
+                { ...singularCampaignObj, time: new Date(Date.now()).getTime() }
+              );
+            }
+          }, 1000);
         });
       }
       setNftCardData(singularCampaignArr);
@@ -122,6 +141,15 @@ export function NftContextProvider({ children }) {
     chains: [{ chainId: chainId, nodeUrl: `https://${nodeUrl}` }],
   });
 
+  useEffect(() => {
+    checkIfAuthorizeduser();
+  }, [authUserData]);
+
+  useEffect(() => {
+    setUserLoginProvider("");
+    userAccountLogin();
+  }, [userLoginProvider]);
+
   const tryAutoLoginBrowser = async () => {
     let cookies = document.cookie;
 
@@ -149,15 +177,6 @@ export function NftContextProvider({ children }) {
       localStorage.setItem("userLoggedIn", true);
     }
   };
-
-  useEffect(() => {
-    checkIfAuthorizeduser();
-  }, [authUserData]);
-
-  useEffect(() => {
-    setUserLoginProvider("");
-    userAccountLogin();
-  }, [userLoginProvider]);
 
   const userAccountLogin = () => {
     if (userLoginProvider == "anchor") {
@@ -405,7 +424,7 @@ export function NftContextProvider({ children }) {
         addMoreData,
         setAddMoreData,
         setUserAccount,
-        timeToShow,
+        endedSnapVal,
       }}
     >
       {children}

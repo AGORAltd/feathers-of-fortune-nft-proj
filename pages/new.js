@@ -101,6 +101,9 @@ export async function getStaticProps() {
                 loopTimeSeconds: runningCampaigns?.loop_time_seconds,
                 lastRoll: runningCampaigns?.last_roll,
                 totalEntriesEnd: runningCampaigns?.max_users,
+                finalUTCEpochTimeInMilliSec:
+                  Date.parse(`${runningCampaigns.lastRoll}Z`) +
+                  runningCampaigns.loopTimeSeconds * 1000,
               };
 
               set(ref(adminDb, `/campaigns/${campaignObj.route}`), campaignObj);
@@ -114,6 +117,6 @@ export async function getStaticProps() {
 
   return {
     props: {},
-    revalidate: 1,
+    revalidate: 4,
   };
 }

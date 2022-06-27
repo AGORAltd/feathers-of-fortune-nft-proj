@@ -9,7 +9,6 @@ import { WAX_PINK_END_POINT } from "../../../constants/constants";
 import axios from "axios";
 import { imgSrc } from "../../imgSrc";
 import { ref, remove } from "firebase/database";
-import { StartFirebase } from "../../../../context/firebase-config";
 
 const NftCard = ({
   nftSrc,
@@ -26,6 +25,7 @@ const NftCard = ({
   assetId,
   joinedAccounts,
   route,
+  finalUTCEpochTimeInMilliSec,
 }) => {
   const {
     joinCampaign,
@@ -37,17 +37,17 @@ const NftCard = ({
     userAccountLogin,
     setUserLoginProvider,
   } = useContext(NftContext);
-  const firebaseDb = StartFirebase();
-  const finalUTCEpochTimeInMilliSec =
-    Date.parse(`${lastRoll}Z`) + loopTimeSeconds * 1000;
 
   useEffect(() => {
-    updateTimeToShow(finalUTCEpochTimeInMilliSec);
+    if (window.location.pathname != "/reveal-winner") {
+      updateTimeToShow(finalUTCEpochTimeInMilliSec);
+    } else {
+      setTimeToShow("Reveal Winner");
+    }
   }, []);
 
   const [showAlert, setShowAlert] = useState(false);
   const [showTransactionMessage, setShowTransactionMessage] = useState(false);
-  const [showNotLoggedInMsg, setShowNotLoggedInMsg] = useState(false);
   const [showWinner, setShowWinner] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [timeToShow, setTimeToShow] = useState("");
@@ -68,22 +68,22 @@ const NftCard = ({
 
   const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
     let interval = setInterval(() => {
-      const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
-      let distance = finalUTCEpochTimeInMilliSec - nowUTCEpochTimeInMilliSec;
-      let hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      );
-      let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      setTimeToShow(
-        `${hours}:${minutes < 10 ? "0" + minutes : minutes}:${
-          seconds < 10 ? "0" + seconds : seconds
-        }`
-      );
+      let distance = finalUTCEpochTimeInMilliSec - new Date(Date.now());
+
+      if (distance > 0) {
+        let hours = Math.floor((distance / 1000 / 60 / 60) % 24);
+        let minutes = Math.floor((distance / 1000 / 60) % 60);
+        let seconds = Math.floor((distance / 1000) % 60);
+
+        setTimeToShow(
+          `${hours}:${minutes < 10 ? "0" + minutes : minutes}:${
+            seconds < 10 ? "0" + seconds : seconds
+          }`
+        );
+      }
 
       if (distance <= 0) {
         clearInterval(interval);
-        setTimeToShow("Reveal Winner");
       }
     }, 1000);
   };
@@ -439,7 +439,9 @@ const GetWinnerWhenExpired = ({
           </>
         }
       >
-        <img src={`${imgSrcFinal}`} />
+        <a href="#" target="_blank" rel="noopener">
+          <img src={`${imgSrcFinal}`} />
+        </a>
 
         {timeCountDown <= 0 ? (
           <>
