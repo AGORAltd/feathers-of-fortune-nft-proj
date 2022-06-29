@@ -36,10 +36,7 @@ export function NftContextProvider({ children }) {
   const [endedCampaigns, setEndedCampaigns] = useState();
   const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
 
-  const queryRef = query(
-    ref(firebaseDb, "/campaigns"),
-    orderByChild("campaignId")
-  );
+  const queryRef = query(ref(firebaseDb, "/campaigns"), orderByChild("time"));
 
   const endedQueryRef = query(
     ref(firebaseDb, "/endedCampaigns"),
@@ -104,15 +101,19 @@ export function NftContextProvider({ children }) {
   useEffect(() => {
     const endedCampaignArr = [];
 
-    onValue(endedQueryRef, (snapshot) => {
-      setEndedSnapVal(snapshot.val());
-      if (snapshot.exists()) {
-        snapshot.forEach((singularCampaignObj) => {
-          endedCampaignArr.push(singularCampaignObj.val());
-        });
-      }
-      setEndedCampaigns(endedCampaignArr);
-    });
+    onValue(
+      endedQueryRef,
+      (snapshot) => {
+        setEndedSnapVal(snapshot.val());
+        if (snapshot.exists()) {
+          snapshot.forEach((singularCampaignObj) => {
+            endedCampaignArr.push(singularCampaignObj.val());
+          });
+        }
+        setEndedCampaigns(endedCampaignArr);
+      },
+      { onlyOnce: true }
+    );
   }, [JSON.stringify(endedSnapVal)]);
 
   const [userAccount, setUserAccount] = useState();
@@ -341,7 +342,7 @@ export function NftContextProvider({ children }) {
         );
         const transactionIdFromSuccess = await result?.transaction_id;
         setIsTransactionSussessful(true);
-        if (result.transaction.id) {
+        if (transactionIdFromSuccess) {
           joinedAccountsArr.push(userAccount);
           update(ref(firebaseDb, `/campaigns/${route}`), {
             joinedAccounts: joinedAccountsArr,
@@ -378,7 +379,7 @@ export function NftContextProvider({ children }) {
         const transactionIdFromSuccess = await result?.transaction_id;
         setTransactionId(transactionIdFromSuccess);
         setIsTransactionSussessful(true);
-        if (result?.transaction_id) {
+        if (transactionIdFromSuccess) {
           joinedAccountsArr.push(userAccount);
           update(ref(firebaseDb, `/campaigns/${route}`), {
             joinedAccounts: joinedAccountsArr,

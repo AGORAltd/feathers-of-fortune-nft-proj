@@ -114,7 +114,10 @@ export async function getStaticProps() {
                   runningCampaigns?.loop_time_seconds * 1000,
               };
 
-              set(ref(adminDb, `/campaigns/${campaignObj.route}`), campaignObj);
+              set(ref(adminDb, `/campaigns/${campaignObj.route}`), {
+                ...campaignObj,
+                time: new Date(Date.now()).getTime(),
+              });
             });
         }
       });
@@ -124,6 +127,6 @@ export async function getStaticProps() {
   });
   return {
     props: {},
-    revalidate: 4,
+    revalidate: 1,
   };
 }

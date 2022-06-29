@@ -106,9 +106,13 @@ export async function getStaticProps() {
                 finalUTCEpochTimeInMilliSec:
                   Date.parse(`${runningCampaigns.lastRoll}Z`) +
                   runningCampaigns.loopTimeSeconds * 1000,
+                time: new Date(Date.now()).getTime(),
               };
 
-              set(ref(adminDb, `/campaigns/${campaignObj.route}`), campaignObj);
+              set(ref(adminDb, `/campaigns/${campaignObj.route}`), {
+                ...campaignObj,
+                time: new Date(Date.now()).getTime(),
+              });
             });
         }
       });
@@ -119,6 +123,6 @@ export async function getStaticProps() {
 
   return {
     props: {},
-    revalidate: 4,
+    revalidate: 1,
   };
 }
