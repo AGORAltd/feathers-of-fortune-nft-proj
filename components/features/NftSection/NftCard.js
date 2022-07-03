@@ -1,25 +1,22 @@
 import Image from "next/image";
-import React, { useMemo } from "react";
+import React from "react";
 import { useContext } from "react";
-import { NftContext } from "../../../../context/NftContext";
+import { NftContext } from "../../../context/NftContext";
 import { useState } from "react";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { useEffect } from "react";
-import { WAX_PINK_END_POINT } from "../../../constants/constants";
-import axios from "axios";
-import { imgSrc } from "../../imgSrc";
-import { ref, remove } from "firebase/database";
+import useJoinCampaign from "../../walletFunctions/joinCampaignFunction";
+import { GetWinnerWhenExpired } from "./GetWinnerWhenExpired";
+import useUpdateTimeToShow from "./useUpdateTimeToShow";
 
 const NftCard = ({
   nftSrc,
   campaignId,
   creator,
-  loopTimeSeconds,
   totalEntriesStart,
   totalEntriesEnd,
   entryCost,
   contractAccount,
-  lastRoll,
   isVideo,
   videoNftUrl,
   assetId,
@@ -27,16 +24,16 @@ const NftCard = ({
   route,
   finalUTCEpochTimeInMilliSec,
 }) => {
+  const { userAccount, userAccountLogin, setUserLoginProvider } =
+    useContext(NftContext);
+
   const {
     joinCampaign,
+    joinErrorMessage,
     isTransactionSussessful,
-    erroMsg,
-    transactionId,
     setIsTransactionSussessful,
-    userAccount,
-    userAccountLogin,
-    setUserLoginProvider,
-  } = useContext(NftContext);
+    transactionId,
+  } = useJoinCampaign();
 
   const [showAlert, setShowAlert] = useState(false);
   const [showTransactionMessage, setShowTransactionMessage] = useState(false);
@@ -50,45 +47,14 @@ const NftCard = ({
     if (transactionId) {
       setShowTransactionMessage(true);
       setShowErrorMessage(false);
-    } else if (erroMsg != "") {
+    } else if (joinErrorMessage != undefined) {
       setShowErrorMessage(true);
       setShowTransactionMessage(false);
-      console.log(erroMsg);
+      console.log(joinErrorMessage);
     }
   }, [transactionId]);
 
-  const updateTimeToShow = (finalUTCEpochTimeInMilliSec) => {
-    let distance = finalUTCEpochTimeInMilliSec - +new Date(Date.now());
-
-    let timeLeft;
-
-    if (distance > 0) {
-      let hours = Math.floor((distance / 1000 / 60 / 60) % 24);
-      let minutes = Math.floor((distance / 1000 / 60) % 60);
-      let seconds = Math.floor((distance / 1000) % 60);
-
-      timeLeft = `${hours}:${minutes < 10 ? "0" + minutes : minutes}:${
-        seconds < 10 ? "0" + seconds : seconds
-      }`;
-    }
-
-    return timeLeft;
-  };
-
-  const [timeToShow, setTimeToShow] = useState(
-    updateTimeToShow(finalUTCEpochTimeInMilliSec)
-  );
-
-  useEffect(() => {
-    if (window.location.pathname != "/reveal-winner") {
-      const timer = setTimeout(() => {
-        setTimeToShow(updateTimeToShow(finalUTCEpochTimeInMilliSec));
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else {
-      setTimeToShow("Reveal Winner");
-    }
-  }, [timeToShow]);
+  const { timeToShow } = useUpdateTimeToShow(finalUTCEpochTimeInMilliSec);
 
   return (
     <>
@@ -221,7 +187,7 @@ const NftCard = ({
         >
           <p>Transaction Id : {transactionId} </p>
         </SweetAlert>
-      ) : erroMsg != "" ? (
+      ) : joinErrorMessage != undefined ? (
         <SweetAlert
           danger
           show={showErrorMessage}
@@ -242,11 +208,9 @@ const NftCard = ({
             </>
           }
         >
-          <p>{erroMsg}</p>
+          <p>{joinErrorMessage}</p>
         </SweetAlert>
-      ) : (
-        ""
-      )}
+      ) : null}
 
       <div className={`rounded nft_card_container`}>
         <a
@@ -373,93 +337,3 @@ const NftCard = ({
 };
 
 export default NftCard;
-
-const GetWinnerWhenExpired = ({
-  assetIdToFindWith = "",
-  campaignIdToFindWith = "",
-  openModal = true,
-  timeCountDown,
-  handleClose,
-}) => {
-  const [currentWinnerUser, setCurrentWinnerUser] = useState("");
-  const [imgSrcFinal, setImgSrcFinal] = useState("");
-
-  useEffect(() => {
-    getWinnerUser();
-  }, []);
-
-  const getWinnerUser = async () => {
-    const response = await axios.post(
-      `${WAX_PINK_END_POINT}/v1/chain/get_table_rows`,
-      {
-        json: true,
-        code: "fortunebirds",
-        scope: "fortunebirds",
-        table: "results",
-        limit: 1000,
-      }
-    );
-
-    let campaignDataOnExpire = await response.data?.rows;
-
-    const currentWinner = campaignDataOnExpire?.filter((item) => {
-      return (
-        item?.asset_id == assetIdToFindWith &&
-        item?.campaign_id == campaignIdToFindWith
-      );
-    });
-
-    setCurrentWinnerUser(() => currentWinner[0]?.winner);
-  };
-
-  useEffect(() => {
-    randomImageSelector(imgSrc);
-  }, [imgSrcFinal]);
-
-  const randomImageSelector = (items) => {
-    const imgSrcFromArray = items[Math.floor(Math.random() * items.length)];
-    setImgSrcFinal(imgSrcFromArray);
-  };
-
-  return (
-    <>
-      <SweetAlert
-        custom
-        onConfirm={() => {}}
-        title=""
-        show={openModal}
-        style={{ backgroundColor: "#1d2228", color: "white" }}
-        customButtons={
-          <>
-            <button
-              onClick={handleClose}
-              style={{ backgroundColor: "#5f5dbb" }}
-              className=" px-6 py-3 mx-2 rounded-lg"
-            >
-              OK
-            </button>
-          </>
-        }
-      >
-        <a href="#" target="_blank" rel="noopener">
-          <img src={`${imgSrcFinal}`} />
-        </a>
-
-        {timeCountDown <= 0 ? (
-          <>
-            <p className="pt-5">
-              Winner of the contest is
-              <span className="font-bold text-2xl text-blue-400">
-                <br /> {currentWinnerUser}
-              </span>
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="pt-5">Revealing the winner in {timeCountDown}</p>
-          </>
-        )}
-      </SweetAlert>
-    </>
-  );
-};

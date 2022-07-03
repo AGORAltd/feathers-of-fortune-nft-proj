@@ -1,21 +1,16 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useContext } from "react";
-import { NftContext } from "../../../context/NftContext";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { useState, useEffect } from "react";
+import useCreateCampaign from "../../walletFunctions/createCampaignFunc";
 
 const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
-  function closeModal() {
-    setModalIsOpen(false);
-  }
-
-  const { createCampaign, transactionIdFromCreation, erroMsg } =
-    useContext(NftContext);
   const [showAlert, setShowAlert] = useState(false);
   const [showError, setShowError] = useState(false);
-
   const { register, handleSubmit } = useForm();
+
+  const { createCampaign, transactionIdFromCreation, erroMsg } =
+    useCreateCampaign();
 
   const onSubmit = async (data) => {
     await createCampaign({
@@ -205,7 +200,9 @@ const CreateCampaignForm = ({ modalIsOpen, setModalIsOpen }) => {
                 Create
               </button>
               <button
-                onClick={closeModal}
+                onClick={() => {
+                  setModalIsOpen(false);
+                }}
                 className="bg-gray-500 px-5 py-2 rounded-lg text-white font-semibold mx-2"
               >
                 Cancel

@@ -1,12 +1,14 @@
 import { useContext } from "react";
 import NftFilter from "../components/features/NftFilters/NftFilter";
-import NftCard from "../components/features/NftSection/components/NftCard";
+import NftCard from "../components/features/NftSection/NftCard";
+import useGetEndedCampaigns from "../components/firebase/useGetEndedCampaigns";
 import AppLayout from "../components/layout/AppLayout";
 import { NftContext } from "../context/NftContext";
 
 const RevealWinner = () => {
-  const { isLoadingData, endedCampaigns, addMoreData, setAddMoreData } =
-    useContext(NftContext);
+  const { isLoadingData } = useContext(NftContext);
+
+  const { endedCampaigns } = useGetEndedCampaigns();
 
   return (
     <>
