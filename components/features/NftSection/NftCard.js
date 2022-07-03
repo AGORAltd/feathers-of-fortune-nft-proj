@@ -47,12 +47,11 @@ const NftCard = ({
     if (transactionId) {
       setShowTransactionMessage(true);
       setShowErrorMessage(false);
-    } else if (joinErrorMessage != undefined) {
+    } else if (joinErrorMessage) {
       setShowErrorMessage(true);
       setShowTransactionMessage(false);
-      console.log(joinErrorMessage);
     }
-  }, [transactionId]);
+  }, [transactionId, joinErrorMessage]);
 
   const { timeToShow } = useUpdateTimeToShow(finalUTCEpochTimeInMilliSec);
 
@@ -187,7 +186,7 @@ const NftCard = ({
         >
           <p>Transaction Id : {transactionId} </p>
         </SweetAlert>
-      ) : joinErrorMessage != undefined ? (
+      ) : joinErrorMessage ? (
         <SweetAlert
           danger
           show={showErrorMessage}
