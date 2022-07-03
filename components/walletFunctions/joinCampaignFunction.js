@@ -45,7 +45,7 @@ const useJoinCampaign = () => {
           },
           { blocksBehind: 4, expireSeconds: 620 }
         );
-        const transactionIdFromSuccess = await result?.transaction_id;
+        const transactionIdFromSuccess = await result?.resolved;
 
         setIsTransactionSussessful(true);
 
