@@ -9,7 +9,7 @@ const NftFilter = () => {
 
   return (
     <>
-      <div className="text-white my-4 flex justify-between flex-col md:flex-row">
+      <div className="text-white my-4 flex align-items-center justify-between flex-col md:flex-row">
         <div className="flex justify-between flex-col md:flex-row my-2 md:my-0">
           <button
             onClick={() => {
@@ -57,6 +57,15 @@ const NftFilter = () => {
 
           <CreateCampaignBtn />
         </div>
+
+        <img
+          onClick={() => {
+            window.location.reload();
+          }}
+          className="cursor-pointer"
+          src="/media/icons/refreshIcon.png"
+          width={"40px"}
+        />
       </div>
     </>
   );

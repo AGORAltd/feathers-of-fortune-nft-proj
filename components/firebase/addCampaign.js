@@ -10,6 +10,7 @@ export async function addCampaignToDb() {
     code: "fortunebirds",
     scope: "fortunebirds",
     table: "campaigns",
+    limit: 10000,
   };
 
   const responseFromPost = await axios.post(
@@ -22,10 +23,9 @@ export async function addCampaignToDb() {
       responseFromPost.data?.rows.forEach((runningCampaigns) => {
         if (
           runningCampaigns?.asset_ids?.length > 0 &&
-          snapshot
-            .child("campaigns")
-            .hasChild(runningCampaigns?.asset_ids[0] + runningCampaigns?.id) ==
-            false
+          snapshot.hasChild(
+            `${runningCampaigns?.asset_ids[0]}${runningCampaigns?.id}`
+          ) != true
         ) {
           axios
             .get(
