@@ -14,7 +14,10 @@ const useGetRunningCampaigns = () => {
   const [snapVal, setSnapVal] = useState();
   const [nftCardData, setNftCardData] = useState([]);
   const nowUTCEpochTimeInMilliSec = new Date(Date.now()).getTime();
-  const queryRef = query(ref(firebaseDb, "/campaigns"), orderByChild("time"));
+  const queryRef = query(
+    ref(firebaseDb, "/campaigns"),
+    orderByChild("campaignId")
+  );
 
   useEffect(() => {
     const singularCampaignArr = [];

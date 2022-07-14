@@ -14,13 +14,21 @@ const AppLayout = ({ children, showLandingPageBanner = true }) => {
         <div className="inf-area-bottom">
           <div className="row justify-center">
             <div className="social">
-              <a style={{ margin: "0px 2px" }} href="#" target="_blank">
+              <a
+                style={{ margin: "0px 2px" }}
+                href="https://twitter.com/fortune_birds"
+                target="_blank"
+              >
                 <img style={{ height: "30px" }} src="/media/img/twitter.svg" />
               </a>
               <a style={{ margin: "0px 2px" }} href="#" target="_blank">
                 <img style={{ height: "30px" }} src="/media/img/discord.svg" />
               </a>
-              <a style={{ margin: "0px 2px" }} href="#" target="_blank">
+              <a
+                style={{ margin: "0px 2px" }}
+                href="https://wax.atomichub.io/profile/fortunetools"
+                target="_blank"
+              >
                 <img
                   className="mx-auto"
                   style={{ width: "32px" }}
