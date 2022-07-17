@@ -23,6 +23,7 @@ const Header = () => {
     anchorLink.clearSessions("PIXELCAMPAIGN");
     setUserAccount(null);
     localStorage.setItem("userLoggedIn", false);
+    localStorage.setItem("userName", "");
     setAnchorWalletSession(null);
     setIsAuthorizedUser(false);
   };

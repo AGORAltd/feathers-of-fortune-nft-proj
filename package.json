@@ -9,7 +9,7 @@
     "export": "next export"
   },
   "dependencies": {
-    "@waxio/waxjs": "^1.0.4",
+    "@waxio/waxjs": "^1.1.0",
     "anchor-link": "^3.4.0",
     "anchor-link-browser-transport": "^3.3.0",
     "axios": "^0.26.1",

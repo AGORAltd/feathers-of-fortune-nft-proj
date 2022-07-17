@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect } from "react";
 import NftFilter from "../components/features/NftFilters/NftFilter";
 import NftCard from "../components/features/NftSection/NftCard";

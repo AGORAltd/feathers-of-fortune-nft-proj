@@ -8,7 +8,6 @@ import * as waxjs from "@waxio/waxjs/dist";
 import AnchorLink from "anchor-link";
 import AnchorLinkBrowserTransport from "anchor-link-browser-transport";
 export const NftContext = createContext();
-
 const wax = new waxjs.WaxJS({
   rpcEndpoint: RPC_ENDPOINT,
   tryAutoLogin: true,
@@ -67,7 +66,7 @@ export function NftContextProvider({ children }) {
       isAutoLoginAvailable &&
       localStorage.getItem("userLoggedIn") != "false"
     ) {
-      setUserAccount(wax.userAccount ? wax.userAccount : cookies.split("=")[1]);
+      setUserAccount(wax.userAccount);
       getAuthUsers();
       setUserLoginProvider("wax");
       localStorage.setItem("userLoggedIn", true);
